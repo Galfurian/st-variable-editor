@@ -17,6 +17,27 @@ const defaultSettings = {
     fontSize: 1.0
 };
 
+// Store previous variable states to detect changes
+let previousLocalVars = JSON.stringify({});
+let previousGlobalVars = JSON.stringify({});
+
+// Check if variables have changed and update the panel if needed
+function checkAndUpdateVariables() {
+  if (!extension_settings[extensionName].isShown) return;
+
+  const currentLocalVars = JSON.stringify(chat_metadata.variables || {});
+  const currentGlobalVars = JSON.stringify(extension_settings.variables?.global || {});
+
+  const localChanged = currentLocalVars !== previousLocalVars;
+  const globalChanged = currentGlobalVars !== previousGlobalVars;
+
+  if (localChanged || globalChanged) {
+    previousLocalVars = currentLocalVars;
+    previousGlobalVars = currentGlobalVars;
+    renderPanel();
+  }
+}
+
 
  
 // Loads the extension settings if they exist, otherwise initializes them to the defaults.
@@ -173,6 +194,10 @@ function renderPanel() {
   panel.append(globalDiv);
 
   document.body.append(panel);
+
+  // Update previous variable states
+  previousLocalVars = JSON.stringify(chat_metadata.variables || {});
+  previousGlobalVars = JSON.stringify(extension_settings.variables?.global || {});
 }
 
 function createVariableRow(key, value, type) {
@@ -282,20 +307,23 @@ jQuery(async () => {
 
   // Add event listeners for dynamic updates
   eventSource.on(event_types.CHAT_CHANGED, () => {
+    // Reset previous vars when chat changes
+    previousLocalVars = JSON.stringify({});
+    previousGlobalVars = JSON.stringify({});
     if (extension_settings[extensionName].isShown) {
       renderPanel();
     }
   });
 
   eventSource.on(event_types.MESSAGE_RECEIVED, () => {
-    if (extension_settings[extensionName].isShown) {
-      renderPanel();
-    }
+    checkAndUpdateVariables();
   });
 
   eventSource.on(event_types.MESSAGE_SENT, () => {
-    if (extension_settings[extensionName].isShown) {
-      renderPanel();
-    }
+    checkAndUpdateVariables();
+  });
+
+  eventSource.on(event_types.GENERATION_ENDED, () => {
+    checkAndUpdateVariables();
   });
 });
