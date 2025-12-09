@@ -38,7 +38,8 @@ class VariableItem {
     this.valueInput.onchange = () => updateVariableValue(this.nameInput.value, this.valueInput.value, this.type);
 
     const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
+    deleteBtn.classList.add('fa-solid', 'fa-circle-xmark');
+    deleteBtn.title = 'Delete variable';
     deleteBtn.onclick = () => deleteVariable(this.key, this.type);
 
     this.row.append(this.nameInput);

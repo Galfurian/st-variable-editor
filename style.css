@@ -68,18 +68,27 @@
 }
 
 .var-name {
-  flex: 0 0 120px;
+  flex: 0 0 60%;
 }
 
 .var-value {
-  flex: 1;
+  flex: 0 0 20%;
 }
 
 .variable-row button {
-  flex: 0 0 auto;
-  padding: 5px 8px;
-  font-size: 0.8em;
-  min-width: 50px;
+  flex: 0 0 20%;
+  padding: 2px;
+  font-size: 1.2em;
+  min-width: auto;
+  border: none;
+  background: none;
+  color: var(--SmartThemeEmColor, #6c757d);
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.variable-row button:hover {
+  background: var(--SmartThemeHoverColor, #e9ecef);
 }
 
 /* Collapsible drawer styles */
