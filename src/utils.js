@@ -86,12 +86,14 @@ export function createAddRow(type) {
   const icon = document.createElement('i');
   icon.classList.add('fa-fw', 'fa-solid', 'fa-file-circle-plus');
   addBtn.append(icon);
-  addBtn.onclick = () => {
+  addBtn.onclick = async () => {
     const name = nameInput.value.trim();
     const value = valueInput.value.trim();
-    addVariable(type, name, value);
-    nameInput.value = '';
-    valueInput.value = '';
+    const added = await addVariable(type, name, value);
+    if (added) {
+      nameInput.value = '';
+      valueInput.value = '';
+    }
   };
 
   row.append(nameInput);
@@ -107,11 +109,11 @@ export async function addVariable(type, providedName, providedValue) {
 
   if (!providedName) {
     toastr.error('Variable name cannot be empty.');
-    return;
+    return false;
   }
   if (!providedValue) {
     toastr.error('Variable value cannot be empty.');
-    return;
+    return false;
   }
 
   if (type === 'local') {
@@ -127,6 +129,7 @@ export async function addVariable(type, providedName, providedValue) {
   toastr.success('Variable added successfully!');
   const { renderPanel } = await import('./ui.js');
   renderPanel();
+  return true;
 }
 
 // Delete a variable
