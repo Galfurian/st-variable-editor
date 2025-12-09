@@ -1,5 +1,5 @@
 // UI rendering and DOM manipulation for Variable Editor
-import { chat_metadata } from "../../../../script.js";
+import { chat_metadata } from "../../../../../script.js";
 import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue } from './utils.js';
 import { startUpdateLoop, stopUpdateLoop, storeInputReferences, updatePreviousVars } from './state.js';
 

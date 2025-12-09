@@ -1,5 +1,5 @@
 // Utility functions for Variable Editor
-import { chat_metadata } from "../../../../script.js";
+import { chat_metadata } from "../../../../../script.js";
 
 // Extension configuration
 const extensionName = "st-variable-editor";
