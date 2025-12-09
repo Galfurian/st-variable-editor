@@ -111,7 +111,6 @@
   border: 1px solid var(--SmartThemeBorderColor, #dee2e6);
   border-top: none;
   border-radius: 0 0 4px 4px;
-  background: var(--SmartThemeBodyColor, white);
 }
 
 /* FontAwesome button styles */
