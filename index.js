@@ -112,6 +112,8 @@ function togglePanel() {
 
 function renderPanel() {
   console.log('[Variable Editor] renderPanel called');
+  const { chatMetadata } = SillyTavern.getContext();
+  console.log('[Variable Editor] Got chatMetadata');
   // Create the panel
   const panel = document.createElement('div');
   panel.id = 'variable-editor-panel';
