@@ -103,9 +103,17 @@ export function createAddRow(type) {
 
 // Add a new variable
 export async function addVariable(type, providedName, providedValue) {
-  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+  const { extensionSettings, saveSettingsDebounced, libs } = SillyTavern.getContext();
+  const { toastr } = libs;
 
-  if (!providedName || !providedValue) return;
+  if (!providedName) {
+    toastr.error('Variable name cannot be empty.');
+    return;
+  }
+  if (!providedValue) {
+    toastr.error('Variable value cannot be empty.');
+    return;
+  }
 
   if (type === 'local') {
     if (!chat_metadata.variables) chat_metadata.variables = {};
@@ -117,6 +125,7 @@ export async function addVariable(type, providedName, providedValue) {
   }
 
   saveSettingsDebounced();
+  toastr.success('Variable added successfully!');
   const { renderPanel } = await import('./ui.js');
   renderPanel();
 }
