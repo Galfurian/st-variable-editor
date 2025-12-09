@@ -204,14 +204,3 @@ export function unrenderPanel() {
   // Stop the continuous update loop
   stopUpdateLoop();
 }
-
-// Toggle panel visibility
-export function togglePanel() {
-  extension_settings[extensionName].isShown = !extension_settings[extensionName].isShown;
-  if (extension_settings[extensionName].isShown) {
-    renderPanel();
-  } else {
-    unrenderPanel();
-  }
-  saveSettingsDebounced();
-}

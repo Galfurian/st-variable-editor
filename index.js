@@ -7,7 +7,7 @@ import { saveSettingsDebounced, chat_metadata } from "../../../../script.js";
 import { registerSlashCommand } from '../../../slash-commands.js';
 
 // Import our modules
-import { renderPanel, togglePanel } from './src/ui.js';
+import { renderPanel, unrenderPanel } from './src/ui.js';
 import { loadSettings } from './src/utils.js';
 
 // Extension configuration
@@ -18,6 +18,17 @@ const defaultSettings = {
     isShown: true,
     fontSize: 1.0
 };
+
+// Toggle panel visibility
+function togglePanel() {
+  extension_settings[extensionName].isShown = !extension_settings[extensionName].isShown;
+  if (extension_settings[extensionName].isShown) {
+    renderPanel();
+  } else {
+    unrenderPanel();
+  }
+  saveSettingsDebounced();
+}
 
 // This function is called when the extension is loaded
 jQuery(async () => {
