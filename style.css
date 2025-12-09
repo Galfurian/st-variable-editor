@@ -102,6 +102,16 @@
   color: var(--SmartThemeEmColor, #dc3545);
 }
 
+.value-updated {
+  animation: value-blink 0.3s ease-in-out;
+}
+
+@keyframes value-blink {
+  0% { background-color: var(--SmartThemeEmColor, #007bff); color: var(--SmartThemeBlurTintColor, white); }
+  50% { background-color: var(--SmartThemeEmColor, #007bff); color: var(--SmartThemeBlurTintColor, white); }
+  100% { background-color: var(--SmartThemeBlurTintColor, white); color: var(--SmartThemeBodyColor, black); }
+}
+
 /* Collapsible drawer styles */
 .inline-drawer-toggle {
   cursor: pointer;

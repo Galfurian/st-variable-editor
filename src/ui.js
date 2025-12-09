@@ -222,6 +222,11 @@ export function updateExistingInputs(localVars, globalVars) {
     }
     if (localVars[item.key] !== item.value) {
       item.update(localVars[item.key]);
+      // Add blink effect
+      if (item.valueInput) {
+        item.valueInput.classList.add('value-updated');
+        setTimeout(() => item.valueInput.classList.remove('value-updated'), 300);
+      }
     }
     return true;
   });
@@ -243,6 +248,11 @@ export function updateExistingInputs(localVars, globalVars) {
     }
     if (globalVars[item.key] !== item.value) {
       item.update(globalVars[item.key]);
+      // Add blink effect
+      if (item.valueInput) {
+        item.valueInput.classList.add('value-updated');
+        setTimeout(() => item.valueInput.classList.remove('value-updated'), 300);
+      }
     }
     return true;
   });
