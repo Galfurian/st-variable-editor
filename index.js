@@ -23,8 +23,8 @@ if (!extension_settings[extensionName]) {
   extension_settings[extensionName] = { ...defaultSettings };
 }
 
-// Toggle panel visibility
-function togglePanel() {
+// Register slash command immediately (like temp_viewer does)
+registerSlashCommand('variableeditor', () => {
   extension_settings[extensionName].isShown = !extension_settings[extensionName].isShown;
   const panel = document.getElementById('variable-editor-panel');
   if (panel) {
@@ -38,10 +38,7 @@ function togglePanel() {
     renderPanel();
   }
   saveSettingsDebounced();
-}
-
-// Register slash command immediately (like temp_viewer does)
-registerSlashCommand('variableeditor', togglePanel, [], 'show / hide the variable editor panel', true, true);
+}, [], 'show / hide the variable editor panel', true, true);
 
 // This function is called when the extension is loaded
 jQuery(async () => {
