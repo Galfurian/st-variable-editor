@@ -1,4 +1,9 @@
 // Utility functions for Variable Editor
+import { extension_settings } from "../../../extensions.js";
+import { saveSettingsDebounced } from "../../../../script.js";
+
+// Extension configuration
+const extensionName = "st-variable-editor";
 
 // Create a variable row element
 export function createVariableRow(key, value, type) {

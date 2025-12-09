@@ -1,4 +1,8 @@
 // State management and update logic for Variable Editor
+import { extension_settings } from "../../../extensions.js";
+
+// Extension configuration
+const extensionName = "st-variable-editor";
 
 // Store previous variable states to detect changes
 let previousLocalVars = JSON.stringify({});
