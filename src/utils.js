@@ -130,88 +130,115 @@ export function createAddRow(type) {
 
 /** Adds a new variable to the specified scope */
 export async function addVariable(type, providedName, providedValue) {
-  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+  try {
+    const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
 
-  if (!providedName) {
-    toastr.error('Variable name cannot be empty.');
+    if (!providedName) {
+      toastr.error('Variable name cannot be empty.');
+      return false;
+    }
+    if (!providedValue) {
+      toastr.error('Variable value cannot be empty.');
+      return false;
+    }
+
+    if (type === 'local') {
+      if (!chat_metadata.variables) chat_metadata.variables = {};
+      chat_metadata.variables[providedName] = providedValue;
+    } else {
+      if (!extensionSettings.variables) extensionSettings.variables = {};
+      if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
+      extensionSettings.variables.global[providedName] = providedValue;
+    }
+
+    saveSettingsDebounced();
+    toastr.success('Variable added successfully!');
+    const { renderPanel } = await import('./ui.js');
+    await renderPanel();
+    return true;
+  } catch (error) {
+    console.error('[Variable Editor] Error adding variable:', error);
+    toastr.error('Failed to add variable. Please try again.');
     return false;
   }
-  if (!providedValue) {
-    toastr.error('Variable value cannot be empty.');
-    return false;
-  }
-
-  if (type === 'local') {
-    if (!chat_metadata.variables) chat_metadata.variables = {};
-    chat_metadata.variables[providedName] = providedValue;
-  } else {
-    if (!extensionSettings.variables) extensionSettings.variables = {};
-    if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
-    extensionSettings.variables.global[providedName] = providedValue;
-  }
-
-  saveSettingsDebounced();
-  toastr.success('Variable added successfully!');
-  const { renderPanel } = await import('./ui.js');
-  renderPanel();
-  return true;
 }
 
 /** Deletes a variable from the specified scope */
 export async function deleteVariable(key, type) {
-  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+  try {
+    const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
 
-  if (type === 'local') {
-    if (chat_metadata.variables) {
-      delete chat_metadata.variables[key];
+    if (type === 'local') {
+      if (chat_metadata.variables) {
+        delete chat_metadata.variables[key];
+      }
+    } else {
+      if (extensionSettings.variables?.global) {
+        delete extensionSettings.variables.global[key];
+      }
     }
-  } else {
-    if (extensionSettings.variables?.global) {
-      delete extensionSettings.variables.global[key];
-    }
+
+    saveSettingsDebounced();
+    toastr.success('Variable deleted successfully!');
+    const { renderPanel } = await import('./ui.js');
+    await renderPanel();
+  } catch (error) {
+    console.error('[Variable Editor] Error deleting variable:', error);
+    toastr.error('Failed to delete variable. Please try again.');
   }
-
-  saveSettingsDebounced();
-  toastr.success('Variable deleted successfully!');
-  const { renderPanel } = await import('./ui.js');
-  renderPanel();
 }
 
 /** Updates the name of an existing variable */
 export async function updateVariableName(oldKey, newKey, type) {
-  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
-  if (oldKey === newKey) return;
+  try {
+    const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+    if (oldKey === newKey) return;
 
-  if (type === 'local') {
-    const vars = chat_metadata.variables;
-    if (vars && vars[oldKey] !== undefined) {
-      vars[newKey] = vars[oldKey];
-      delete vars[oldKey];
+    if (type === 'local') {
+      const vars = chat_metadata.variables;
+      if (vars && vars[oldKey] !== undefined) {
+        vars[newKey] = vars[oldKey];
+        delete vars[oldKey];
+      }
+    } else {
+      const vars = extensionSettings.variables?.global;
+      if (vars && vars[oldKey] !== undefined) {
+        vars[newKey] = vars[oldKey];
+        delete vars[oldKey];
+      }
     }
-  } else {
-    const vars = extensionSettings.variables?.global;
-    if (vars && vars[oldKey] !== undefined) {
-      vars[newKey] = vars[oldKey];
-      delete vars[oldKey];
-    }
+
+    saveSettingsDebounced();
+    const { renderPanel } = await import('./ui.js');
+    await renderPanel();
+  } catch (error) {
+    console.error('[Variable Editor] Error updating variable name:', error);
+    toastr.error('Failed to update variable name. Please try again.');
   }
-
-  saveSettingsDebounced();
-  const { renderPanel } = await import('./ui.js');
-  renderPanel();
 }
 
 /** Updates the value of an existing variable */
-export function updateVariableValue(key, value, type) {
-  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
-  if (type === 'local') {
-    if (!chat_metadata.variables) chat_metadata.variables = {};
-    chat_metadata.variables[key] = value;
-  } else {
-    if (!extensionSettings.variables) extensionSettings.variables = {};
-    if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
-    extensionSettings.variables.global[key] = value;
-  }
+export async function updateVariableValue(key, value, type) {
+  try {
+    const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
 
-  saveSettingsDebounced();
+    if (type === 'local') {
+      const vars = chat_metadata.variables;
+      if (vars) {
+        vars[key] = value;
+      }
+    } else {
+      const vars = extensionSettings.variables?.global;
+      if (vars) {
+        vars[key] = value;
+      }
+    }
+
+    saveSettingsDebounced();
+    const { renderPanel } = await import('./ui.js');
+    await renderPanel();
+  } catch (error) {
+    console.error('[Variable Editor] Error updating variable value:', error);
+    toastr.error('Failed to update variable value. Please try again.');
+  }
 }

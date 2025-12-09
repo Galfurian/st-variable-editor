@@ -2,7 +2,7 @@
 import { chat_metadata } from "../../../../../script.js";
 
 // Extension configuration
-const extensionName = "st-variable-editor";
+const EXTENSION_NAME = "st-variable-editor";
 
 // Store previous variable states to detect changes
 let previousLocalVars = JSON.stringify({});
@@ -17,7 +17,7 @@ export async function startUpdateLoop() {
   if (isUpdating) return;
   isUpdating = true;
 
-  while (extensionSettings[extensionName].isShown) {
+  while (extensionSettings[EXTENSION_NAME].isShown) {
     try {
       const currentLocalVars = chat_metadata.variables || {};
       const currentGlobalVars = extensionSettings.variables?.global || {};
