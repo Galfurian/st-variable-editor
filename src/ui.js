@@ -21,8 +21,6 @@ export function renderPanel() {
   const { extensionSettings } = SillyTavern.getContext();
   if (!extensionSettings[extensionName].isShown) return;
 
-  console.log(CONSOLE_PREFIX, 'renderPanel called');
-
   // Remove existing panel if it exists
   document.getElementById('variable-editor-panel')?.remove();
 
@@ -35,11 +33,9 @@ export function renderPanel() {
   panel.appendChild(createVariableSection('Global Variables', false));
 
   document.body.appendChild(panel);
-  console.log(CONSOLE_PREFIX, 'Panel appended to body');
 
   // Update previous variable states
   updatePreviousVars(chat_metadata.variables || {}, extensionSettings.variables?.global || {});
-  console.log(CONSOLE_PREFIX, 'renderPanel completed');
 
   // Start the continuous update loop
   startUpdateLoop();

@@ -39,9 +39,8 @@ registerSlashCommand('variableeditor', () => {
 // This function is called when the extension is loaded
 jQuery(async () => {
   try {
-    console.log(CONSOLE_PREFIX, 'Starting initialization');
+    // Extension initialization
     const context = SillyTavern.getContext();
-    console.log(CONSOLE_PREFIX, 'Got context');
     const { eventSource, event_types } = context;
 
     // Always render the panel (but keep it hidden initially)
@@ -53,7 +52,6 @@ jQuery(async () => {
 
     // Add event listeners for dynamic updates
     eventSource.on(event_types.CHAT_CHANGED, () => {
-      console.log(CONSOLE_PREFIX, 'Chat changed event');
       // Re-render the panel when chat changes
       renderPanel();
       const panel = document.getElementById('variable-editor-panel');
@@ -62,7 +60,7 @@ jQuery(async () => {
       }
     });
 
-    console.log(CONSOLE_PREFIX, 'Initialization completed');
+    // Extension initialization complete
   } catch (error) {
     console.error(CONSOLE_PREFIX, 'Initialization error:', error);
   }
