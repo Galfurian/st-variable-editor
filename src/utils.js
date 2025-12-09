@@ -4,13 +4,7 @@ import { chat_metadata } from "../../../../../script.js";
 // Extension configuration
 const extensionName = "st-variable-editor";
 
-// Variable types
-const VARIABLE_TYPE = {
-  LOCAL: 'local',
-  GLOBAL: 'global'
-};
-
-// Variable item class for better management
+// Variable item class for better management.
 class VariableItem {
   constructor(key, value, type) {
     this.key = key;
@@ -220,14 +214,4 @@ export function updateVariableValue(key, value, type) {
   }
 
   saveSettingsDebounced();
-}
-
-/** Loads the extension settings if they exist, otherwise initializes them to the defaults */
-export async function loadSettings() {
-  const { extensionSettings } = SillyTavern.getContext();
-  //Create the settings if they don't exist
-  extensionSettings[extensionName] = extensionSettings[extensionName] || {};
-  if (Object.keys(extensionSettings[extensionName]).length === 0) {
-    Object.assign(extensionSettings[extensionName], defaultSettings);
-  }
 }

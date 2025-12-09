@@ -2,19 +2,17 @@
 // Variable Editor for SillyTavern
 
 // Import dependencies
-import { extension_settings, getContext, loadExtensionSettings } from "../../../extensions.js";
-import { saveSettingsDebounced, chat_metadata } from "../../../../script.js";
+import { extension_settings } from "../../../extensions.js";
+import { saveSettingsDebounced } from "../../../../script.js";
 import { registerSlashCommand } from '../../../slash-commands.js';
 
 // Import our modules
-import { renderPanel, unrenderPanel } from './src/ui.js';
-import { loadSettings } from './src/utils.js';
+import { renderPanel } from './src/ui.js';
 
 // Extension configuration
 const extensionName = "st-variable-editor";
-const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
 const defaultSettings = {
-    isShown: false,  // Start hidden like temp_viewer
+    isShown: false,
     fontSize: 1.0
 };
 
