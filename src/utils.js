@@ -103,8 +103,8 @@ export function createAddRow(type) {
 
 // Add a new variable
 export async function addVariable(type, providedName, providedValue) {
-  const { extensionSettings, saveSettingsDebounced, libs } = SillyTavern.getContext();
-  const { toastr } = libs;
+  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+  const { toastr } = SillyTavern.libs;
 
   if (!providedName) {
     toastr.error('Variable name cannot be empty.');
