@@ -80,7 +80,7 @@ export function createAddRow(type) {
   valueInput.placeholder = 'New variable value';
   valueInput.classList.add('var-value');
 
-  const addBtn = document.createElement('div');
+  const addBtn = document.createElement('button');
   addBtn.classList.add('menu_button', 'menu_button_icon');
   addBtn.title = 'Add variable';
   const icon = document.createElement('i');
