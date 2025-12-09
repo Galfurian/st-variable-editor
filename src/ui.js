@@ -46,6 +46,8 @@ export function renderPanel() {
   closeBtn.classList.add('fa-solid');
   closeBtn.classList.add('fa-circle-xmark');
   closeBtn.onclick = () => {
+    const { extensionSettings } = SillyTavern.getContext();
+    extensionSettings[extensionName].isShown = false;
     const panel = document.getElementById('variable-editor-panel');
     if (panel) panel.style.display = 'none';
   };

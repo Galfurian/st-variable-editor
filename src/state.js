@@ -41,11 +41,11 @@ export async function startUpdateLoop() {
         }
       }
 
-      // Wait 200ms before next check (same as original)
-      await new Promise(resolve => setTimeout(resolve, 200));
+      // Wait 100ms before next check (faster updates)
+      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
       console.error('[Variable Editor] Error in update loop:', error);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait longer on error
+      await new Promise(resolve => setTimeout(resolve, 500)); // Wait longer on error
     }
   }
 
