@@ -64,9 +64,9 @@
   flex: 1 1 auto;
   min-width: 0;
   padding: 5px;
-  border: 1px solid var(--SmartThemeBorderColor, #ccc);
+  border: 1px solid var(--SmartThemeBorderColor, #ddd);
   border-radius: 3px;
-  background: var(--SmartThemeBlurTintColor, white);
+  background: var(--black30a, #f4f4f4);
   color: var(--SmartThemeBodyColor, black);
 }
 
@@ -75,9 +75,9 @@
   flex: 0 0 30%;
   min-width: 0;
   padding: 5px;
-  border: 1px solid var(--SmartThemeBorderColor, #ccc);
+  border: 1px solid var(--SmartThemeBorderColor, #ddd);
   border-radius: 3px;
-  background: var(--SmartThemeBlurTintColor, white);
+  background: var(--black30a, #f4f4f4);
   color: var(--SmartThemeBodyColor, black);
 }
 
@@ -109,7 +109,7 @@
 @keyframes value-blink {
   0% { background-color: var(--SmartThemeEmColor, #007bff); color: var(--SmartThemeBlurTintColor, white); }
   50% { background-color: var(--SmartThemeEmColor, #007bff); color: var(--SmartThemeBlurTintColor, white); }
-  100% { background-color: var(--SmartThemeBlurTintColor, white); color: var(--SmartThemeBodyColor, black); }
+  100% { background-color: var(--black30a, #f4f4f4); color: var(--SmartThemeBodyColor, black); }
 }
 
 /* Collapsible drawer styles */
