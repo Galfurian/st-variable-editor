@@ -15,12 +15,13 @@ let globalVarInputs = new Map();
 
 // Render the variable editor panel
 export function renderPanel() {
-  console.log('[Variable Editor] renderPanel called');
   const { extensionSettings } = SillyTavern.getContext();
-  console.log('[Variable Editor] Got extensionSettings');
+  if (!extensionSettings[extensionName].isShown) return;
+
+  console.log('[Variable Editor] renderPanel called');
 
   // Remove existing panel if it exists
-  $('#variable-editor-panel').remove();
+  document.getElementById('variable-editor-panel')?.remove();
 
   // Create the panel
   const panel = document.createElement('div');
