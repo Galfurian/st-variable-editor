@@ -1,4 +1,5 @@
 // Utility functions for Variable Editor
+import { chat_metadata } from "../../../../script.js";
 
 // Extension configuration
 const extensionName = "st-variable-editor";
@@ -45,9 +46,8 @@ export async function addVariable(type) {
   if (value === null || value === undefined) return;
 
   if (type === 'local') {
-    const { chatMetadata } = SillyTavern.getContext();
-    if (!chatMetadata.variables) chatMetadata.variables = {};
-    chatMetadata.variables[name] = value;
+    if (!chat_metadata.variables) chat_metadata.variables = {};
+    chat_metadata.variables[name] = value;
   } else {
     if (!extensionSettings.variables) extensionSettings.variables = {};
     if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
@@ -65,9 +65,8 @@ export async function deleteVariable(key, type) {
   if (!confirm(`Are you sure you want to delete the ${type} variable "${key}"?`)) return;
 
   if (type === 'local') {
-    const { chatMetadata } = SillyTavern.getContext();
-    if (chatMetadata.variables) {
-      delete chatMetadata.variables[key];
+    if (chat_metadata.variables) {
+      delete chat_metadata.variables[key];
     }
   } else {
     if (extensionSettings.variables?.global) {
@@ -86,8 +85,7 @@ export async function updateVariableName(oldKey, newKey, type) {
   if (oldKey === newKey) return;
 
   if (type === 'local') {
-    const { chatMetadata } = SillyTavern.getContext();
-    const vars = chatMetadata.variables;
+    const vars = chat_metadata.variables;
     if (vars && vars[oldKey] !== undefined) {
       vars[newKey] = vars[oldKey];
       delete vars[oldKey];
@@ -109,9 +107,8 @@ export async function updateVariableName(oldKey, newKey, type) {
 export function updateVariableValue(key, value, type) {
   const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
   if (type === 'local') {
-    const { chatMetadata } = SillyTavern.getContext();
-    if (!chatMetadata.variables) chatMetadata.variables = {};
-    chatMetadata.variables[key] = value;
+    if (!chat_metadata.variables) chat_metadata.variables = {};
+    chat_metadata.variables[key] = value;
   } else {
     if (!extensionSettings.variables) extensionSettings.variables = {};
     if (!extensionSettings.variables.global) extensionSettings.variables.global = {};

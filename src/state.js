@@ -1,4 +1,5 @@
 // State management and update logic for Variable Editor
+import { chat_metadata } from "../../../../script.js";
 
 // Extension configuration
 const extensionName = "st-variable-editor";
@@ -18,8 +19,7 @@ export async function startUpdateLoop() {
 
   while (extensionSettings[extensionName].isShown) {
     try {
-      const { chatMetadata } = SillyTavern.getContext();
-      const currentLocalVars = chatMetadata.variables || {};
+      const currentLocalVars = chat_metadata.variables || {};
       const currentGlobalVars = extensionSettings.variables?.global || {};
 
       const localVarsStr = JSON.stringify(currentLocalVars);

@@ -1,4 +1,5 @@
 // UI rendering and DOM manipulation for Variable Editor
+import { chat_metadata } from "../../../../script.js";
 import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue } from './utils.js';
 import { startUpdateLoop, stopUpdateLoop, storeInputReferences, updatePreviousVars } from './state.js';
 
@@ -15,8 +16,8 @@ let globalVarInputs = new Map();
 // Render the variable editor panel
 export function renderPanel() {
   console.log('[Variable Editor] renderPanel called');
-  const { chatMetadata, extensionSettings } = SillyTavern.getContext();
-  console.log('[Variable Editor] Got chatMetadata');
+  const { extensionSettings } = SillyTavern.getContext();
+  console.log('[Variable Editor] Got extensionSettings');
 
   // Remove existing panel if it exists
   $('#variable-editor-panel').remove();
@@ -91,7 +92,7 @@ export function renderPanel() {
   localContent.classList.add('variable-content');
   localContentRef = localContent; // Store reference
 
-  const localVars = chatMetadata.variables || {};
+  const localVars = chat_metadata.variables || {};
   for (const key in localVars) {
     const row = createVariableRow(key, localVars[key], 'local');
     localContent.append(row);
@@ -139,7 +140,7 @@ export function renderPanel() {
   storeInputReferences(localVars, globalVars);
 
   // Update previous variable states
-  updatePreviousVars(chatMetadata.variables || {}, extensionSettings.variables?.global || {});
+  updatePreviousVars(chat_metadata.variables || {}, extensionSettings.variables?.global || {});
   console.log('[Variable Editor] renderPanel completed');
 
   // Start the continuous update loop
