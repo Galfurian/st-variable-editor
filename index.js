@@ -21,21 +21,71 @@ const defaultSettings = {
 let previousLocalVars = JSON.stringify({});
 let previousGlobalVars = JSON.stringify({});
 
-// Check if variables have changed and update the panel if needed
+// Keep references to current input elements for efficient updates
+let localVarInputs = new Map();
+let globalVarInputs = new Map();
+
+// Check if variables have changed and update the display efficiently
 function checkAndUpdateVariables() {
   if (!extension_settings[extensionName].isShown) return;
 
-  const currentLocalVars = JSON.stringify(chat_metadata.variables || {});
-  const currentGlobalVars = JSON.stringify(extension_settings.variables?.global || {});
+  const currentLocalVars = chat_metadata.variables || {};
+  const currentGlobalVars = extension_settings.variables?.global || {};
 
-  const localChanged = currentLocalVars !== previousLocalVars;
-  const globalChanged = currentGlobalVars !== previousGlobalVars;
+  const localChanged = JSON.stringify(currentLocalVars) !== previousLocalVars;
+  const globalChanged = JSON.stringify(currentGlobalVars) !== previousGlobalVars;
 
   if (localChanged || globalChanged) {
-    previousLocalVars = currentLocalVars;
-    previousGlobalVars = currentGlobalVars;
-    renderPanel();
+    previousLocalVars = JSON.stringify(currentLocalVars);
+    previousGlobalVars = JSON.stringify(currentGlobalVars);
+
+    // Update existing inputs instead of re-rendering
+    updateExistingInputs(currentLocalVars, currentGlobalVars);
+
+    // Only re-render if structure changed (added/removed variables)
+    if (hasStructureChanged(currentLocalVars, currentGlobalVars)) {
+      renderPanel();
+    }
   }
+}
+
+// Update existing input values without re-rendering the DOM
+function updateExistingInputs(currentLocalVars, currentGlobalVars) {
+  // Update local variable inputs
+  for (const [key, value] of Object.entries(currentLocalVars)) {
+    const input = localVarInputs.get(key);
+    if (input && input.value !== String(value)) {
+      input.value = value;
+    }
+  }
+
+  // Update global variable inputs
+  for (const [key, value] of Object.entries(currentGlobalVars)) {
+    const input = globalVarInputs.get(key);
+    if (input && input.value !== String(value)) {
+      input.value = value;
+    }
+  }
+}
+
+// Check if the variable structure changed (added/removed variables)
+function hasStructureChanged(currentLocalVars, currentGlobalVars) {
+  const currentLocalKeys = new Set(Object.keys(currentLocalVars));
+  const currentGlobalKeys = new Set(Object.keys(currentGlobalVars));
+
+  const previousLocalKeys = new Set(Object.keys(JSON.parse(previousLocalVars)));
+  const previousGlobalKeys = new Set(Object.keys(JSON.parse(previousGlobalVars)));
+
+  // Check if any keys were added or removed
+  const localKeysChanged = currentLocalKeys.size !== previousLocalKeys.size ||
+    [...currentLocalKeys].some(key => !previousLocalKeys.has(key)) ||
+    [...previousLocalKeys].some(key => !currentLocalKeys.has(key));
+
+  const globalKeysChanged = currentGlobalKeys.size !== previousGlobalKeys.size ||
+    [...currentGlobalKeys].some(key => !previousGlobalKeys.has(key)) ||
+    [...previousGlobalKeys].some(key => !currentGlobalKeys.has(key));
+
+  return localKeysChanged || globalKeysChanged;
 }
 
 
@@ -130,7 +180,7 @@ function renderPanel() {
   localContent.classList.add('inline-drawer-content');
   localContent.style.display = 'block';
 
-  const localVars = chat_metadata.variables || {};
+  const localVars = chatMetadata.variables || {};
   for (const key in localVars) {
     const row = createVariableRow(key, localVars[key], 'local');
     localContent.append(row);
@@ -195,9 +245,35 @@ function renderPanel() {
 
   document.body.append(panel);
 
+  // Store references to input elements for efficient updates
+  storeInputReferences(localVars, globalVars);
+
   // Update previous variable states
-  previousLocalVars = JSON.stringify(chat_metadata.variables || {});
+  previousLocalVars = JSON.stringify(chatMetadata.variables || {});
   previousGlobalVars = JSON.stringify(extension_settings.variables?.global || {});
+}
+
+// Store references to input elements for efficient updates
+function storeInputReferences(localVars, globalVars) {
+  // Clear existing references
+  localVarInputs.clear();
+  globalVarInputs.clear();
+
+  // Store local variable input references
+  for (const key in localVars) {
+    const input = document.querySelector(`input[data-var-key="${key}"][data-var-type="local"]`);
+    if (input) {
+      localVarInputs.set(key, input);
+    }
+  }
+
+  // Store global variable input references
+  for (const key in globalVars) {
+    const input = document.querySelector(`input[data-var-key="${key}"][data-var-type="global"]`);
+    if (input) {
+      globalVarInputs.set(key, input);
+    }
+  }
 }
 
 function createVariableRow(key, value, type) {
@@ -208,12 +284,16 @@ function createVariableRow(key, value, type) {
   nameInput.type = 'text';
   nameInput.value = key;
   nameInput.classList.add('var-name');
+  nameInput.setAttribute('data-var-key', key);
+  nameInput.setAttribute('data-var-type', type);
   nameInput.onchange = () => updateVariableName(key, nameInput.value, type);
 
   const valueInput = document.createElement('input');
   valueInput.type = 'text';
   valueInput.value = value;
   valueInput.classList.add('var-value');
+  valueInput.setAttribute('data-var-key', key);
+  valueInput.setAttribute('data-var-type', type);
   valueInput.onchange = () => updateVariableValue(nameInput.value, valueInput.value, type);
 
   const deleteBtn = document.createElement('button');
@@ -229,16 +309,33 @@ function createVariableRow(key, value, type) {
 
 function updateVariableName(oldKey, newKey, type) {
   if (type === 'local') {
-    const vars = chat_metadata.variables;
+    const { chatMetadata } = SillyTavern.getContext();
+    const vars = chatMetadata.variables;
     if (vars[oldKey] !== undefined) {
       vars[newKey] = vars[oldKey];
       delete vars[oldKey];
+      // Update input reference
+      if (localVarInputs.has(oldKey)) {
+        localVarInputs.delete(oldKey);
+        const input = document.querySelector(`input[data-var-key="${newKey}"][data-var-type="local"]`);
+        if (input) {
+          localVarInputs.set(newKey, input);
+        }
+      }
     }
   } else {
     const vars = extension_settings.variables.global;
     if (vars[oldKey] !== undefined) {
       vars[newKey] = vars[oldKey];
       delete vars[oldKey];
+      // Update input reference
+      if (globalVarInputs.has(oldKey)) {
+        globalVarInputs.delete(oldKey);
+        const input = document.querySelector(`input[data-var-key="${newKey}"][data-var-type="global"]`);
+        if (input) {
+          globalVarInputs.set(newKey, input);
+        }
+      }
       saveSettingsDebounced();
     }
   }
@@ -248,7 +345,8 @@ function updateVariableName(oldKey, newKey, type) {
 
 function updateVariableValue(key, value, type) {
   if (type === 'local') {
-    chat_metadata.variables[key] = value;
+    const { chatMetadata } = SillyTavern.getContext();
+    chatMetadata.variables[key] = value;
   } else {
     extension_settings.variables.global[key] = value;
     saveSettingsDebounced();
@@ -257,9 +355,14 @@ function updateVariableValue(key, value, type) {
 
 function deleteVariable(key, type) {
   if (type === 'local') {
-    delete chat_metadata.variables[key];
+    const { chatMetadata } = SillyTavern.getContext();
+    delete chatMetadata.variables[key];
+    // Remove input reference
+    localVarInputs.delete(key);
   } else {
     delete extension_settings.variables.global[key];
+    // Remove input reference
+    globalVarInputs.delete(key);
     saveSettingsDebounced();
   }
   // Re-render
@@ -273,7 +376,8 @@ function addVariable(type) {
   if (value === null) return;
 
   if (type === 'local') {
-    chat_metadata.variables[key] = value;
+    const { chatMetadata } = SillyTavern.getContext();
+    chatMetadata.variables[key] = value;
   } else {
     if (!extension_settings.variables) extension_settings.variables = {};
     if (!extension_settings.variables.global) extension_settings.variables.global = {};
