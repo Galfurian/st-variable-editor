@@ -13,11 +13,15 @@ import { loadSettings } from './src/utils.js';
 // Extension configuration
 const extensionName = "st-variable-editor";
 const extensionFolderPath = `scripts/extensions/third-party/${extensionName}`;
-const extensionSettings = extension_settings[extensionName];
 const defaultSettings = {
-    isShown: true,
+    isShown: false,  // Start hidden like temp_viewer
     fontSize: 1.0
 };
+
+// Initialize extension settings if they don't exist
+if (!extension_settings[extensionName]) {
+  extension_settings[extensionName] = { ...defaultSettings };
+}
 
 // Toggle panel visibility
 function togglePanel() {
