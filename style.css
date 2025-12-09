@@ -97,9 +97,9 @@
   justify-content: center;
 }
 
-.variable-row button:hover {
-  background: var(--SmartThemeHoverColor, #e9ecef);
+.variable-row button.confirm-delete {
   color: var(--SmartThemeEmColor, #dc3545);
+  background: rgba(220, 53, 69, 0.1);
 }
 
 .value-updated {

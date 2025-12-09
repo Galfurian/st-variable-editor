@@ -40,7 +40,14 @@ class VariableItem {
     const deleteBtn = document.createElement('button');
     deleteBtn.classList.add('fa-solid', 'fa-circle-xmark');
     deleteBtn.title = 'Delete variable';
-    deleteBtn.onclick = () => deleteVariable(this.key, this.type);
+    deleteBtn.onclick = () => {
+      if (deleteBtn.classList.contains('confirm-delete')) {
+        deleteVariable(this.key, this.type);
+      } else {
+        deleteBtn.classList.add('confirm-delete');
+        deleteBtn.title = 'Click again to confirm deletion';
+      }
+    };
 
     this.row.append(this.nameInput);
     this.row.append(this.valueInput);
@@ -135,7 +142,6 @@ export async function addVariable(type, providedName, providedValue) {
 // Delete a variable
 export async function deleteVariable(key, type) {
   const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
-  if (!confirm(`Are you sure you want to delete the ${type} variable "${key}"?`)) return;
 
   if (type === 'local') {
     if (chat_metadata.variables) {
@@ -148,6 +154,7 @@ export async function deleteVariable(key, type) {
   }
 
   saveSettingsDebounced();
+  toastr.success('Variable deleted successfully!');
   const { renderPanel } = await import('./ui.js');
   renderPanel();
 }
