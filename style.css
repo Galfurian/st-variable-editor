@@ -48,3 +48,31 @@
 .variable-editor-panel button:hover {
   background: var(--SmartThemeButtonHoverColor, #0056b3);
 }
+
+.variable-section {
+  margin-bottom: 20px;
+}
+
+.variable-row {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  gap: 10px;
+}
+
+.var-name, .var-value {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid var(--SmartThemeBorderColor, #ccc);
+  border-radius: 3px;
+  background: var(--SmartThemeBodyColor, white);
+  color: var(--SmartThemeEmColor, black);
+}
+
+.var-name {
+  flex: 0 0 120px;
+}
+
+.var-value {
+  flex: 1;
+}
