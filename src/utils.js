@@ -1,6 +1,6 @@
 // Utility functions for Variable Editor
-import { extension_settings } from "../../../extensions.js";
-import { saveSettingsDebounced } from "../../../../script.js";
+// import { extension_settings } from "../../../extensions.js";
+// import { saveSettingsDebounced } from "../../../../script.js";
 
 // Extension configuration
 const extensionName = "st-variable-editor";

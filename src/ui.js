@@ -1,6 +1,6 @@
 // UI rendering and DOM manipulation for Variable Editor
-import { extension_settings } from "../../../extensions.js";
-import { saveSettingsDebounced } from "../../../../script.js";
+// import { extension_settings } from "../../../extensions.js";
+// import { saveSettingsDebounced } from "../../../../script.js";
 import { isLocalCollapsed, isGlobalCollapsed, toggleLocalCollapsed, toggleGlobalCollapsed } from './state.js';
 import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue } from './utils.js';
 import { startUpdateLoop, stopUpdateLoop, storeInputReferences, updatePreviousVars } from './state.js';
