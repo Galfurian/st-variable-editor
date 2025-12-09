@@ -86,7 +86,11 @@ export function createAddRow(type) {
   const icon = document.createElement('i');
   icon.classList.add('fa-fw', 'fa-solid', 'fa-file-circle-plus');
   addBtn.append(icon);
-  addBtn.onclick = () => addVariable(type);
+  addBtn.onclick = () => {
+    const name = nameInput.value.trim();
+    const value = valueInput.value.trim();
+    addVariable(type, name || null, value !== '' ? value : null);
+  };
 
   row.append(nameInput);
   row.append(valueInput);
@@ -96,12 +100,12 @@ export function createAddRow(type) {
 }
 
 // Add a new variable
-export async function addVariable(type) {
+export async function addVariable(type, providedName = null, providedValue = null) {
   const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
-  const name = prompt(`Enter ${type} variable name:`);
+  const name = providedName || prompt(`Enter ${type} variable name:`);
   if (!name) return;
 
-  const value = prompt(`Enter ${type} variable value:`);
+  const value = providedValue !== null ? providedValue : prompt(`Enter ${type} variable value:`);
   if (value === null || value === undefined) return;
 
   if (type === 'local') {
