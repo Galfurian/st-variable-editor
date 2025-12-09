@@ -1,0 +1,16 @@
+/* All style elements for your extension go here */
+
+#variable-editor-panel {
+  font-family: Arial, sans-serif;
+}
+
+#variable-editor-panel h4 {
+  margin-top: 20px;
+}
+
+#variable-editor-panel pre {
+  background: #f4f4f4;
+  padding: 10px;
+  border: 1px solid #ddd;
+  overflow: auto;
+}
