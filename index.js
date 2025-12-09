@@ -25,29 +25,51 @@ let previousGlobalVars = JSON.stringify({});
 let localVarInputs = new Map();
 let globalVarInputs = new Map();
 
-// Check if variables have changed and update the display efficiently
-function checkAndUpdateVariables() {
-  if (!extension_settings[extensionName].isShown) return;
+// Flag to control the update loop
+let isUpdating = false;
 
-  const { chatMetadata } = SillyTavern.getContext();
-  const currentLocalVars = chatMetadata.variables || {};
-  const currentGlobalVars = extension_settings.variables?.global || {};
+// Continuous update loop like the original Variable Viewer
+async function startUpdateLoop() {
+  if (isUpdating) return;
+  isUpdating = true;
 
-  const localChanged = JSON.stringify(currentLocalVars) !== previousLocalVars;
-  const globalChanged = JSON.stringify(currentGlobalVars) !== previousGlobalVars;
+  while (extension_settings[extensionName].isShown) {
+    try {
+      const { chatMetadata } = SillyTavern.getContext();
+      const currentLocalVars = chatMetadata.variables || {};
+      const currentGlobalVars = extension_settings.variables?.global || {};
 
-  if (localChanged || globalChanged) {
-    previousLocalVars = JSON.stringify(currentLocalVars);
-    previousGlobalVars = JSON.stringify(currentGlobalVars);
+      const localVarsStr = JSON.stringify(currentLocalVars);
+      const globalVarsStr = JSON.stringify(currentGlobalVars);
 
-    // Update existing inputs instead of re-rendering
-    updateExistingInputs(currentLocalVars, currentGlobalVars);
+      // Check if variables have changed
+      if (localVarsStr !== previousLocalVars || globalVarsStr !== previousGlobalVars) {
+        previousLocalVars = localVarsStr;
+        previousGlobalVars = globalVarsStr;
 
-    // Only re-render if structure changed (added/removed variables)
-    if (hasStructureChanged(currentLocalVars, currentGlobalVars)) {
-      renderPanel();
+        // Update existing inputs without re-rendering
+        updateExistingInputs(currentLocalVars, currentGlobalVars);
+
+        // Check if structure changed (added/removed variables)
+        if (hasStructureChanged(currentLocalVars, currentGlobalVars)) {
+          renderPanel();
+        }
+      }
+
+      // Wait 200ms before next check (same as original)
+      await new Promise(resolve => setTimeout(resolve, 200));
+    } catch (error) {
+      console.error('[Variable Editor] Error in update loop:', error);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait longer on error
     }
   }
+
+  isUpdating = false;
+}
+
+// Stop the update loop
+function stopUpdateLoop() {
+  isUpdating = false;
 }
 
 // Update existing input values without re-rendering the DOM
@@ -257,6 +279,9 @@ function renderPanel() {
   previousLocalVars = JSON.stringify(chatMetadata.variables || {});
   previousGlobalVars = JSON.stringify(extension_settings.variables?.global || {});
   console.log('[Variable Editor] renderPanel completed');
+
+  // Start the continuous update loop
+  startUpdateLoop();
 }
 
 // Store references to input elements for efficient updates
@@ -397,6 +422,9 @@ function addVariable(type) {
 function unrenderPanel() {
   const panel = document.getElementById('variable-editor-panel');
   if (panel) panel.remove();
+
+  // Stop the continuous update loop
+  stopUpdateLoop();
 }
 
 // This function is called when the extension is loaded
@@ -434,20 +462,7 @@ jQuery(async () => {
       }
     });
 
-    eventSource.on(event_types.MESSAGE_RECEIVED, () => {
-      console.log('[Variable Editor] Message received event');
-      checkAndUpdateVariables();
-    });
-
-    eventSource.on(event_types.MESSAGE_SENT, () => {
-      console.log('[Variable Editor] Message sent event');
-      checkAndUpdateVariables();
-    });
-
-    eventSource.on(event_types.GENERATION_ENDED, () => {
-      console.log('[Variable Editor] Generation ended event');
-      checkAndUpdateVariables();
-    });
+    // Note: Other events removed - continuous update loop handles value changes
 
     console.log('[Variable Editor] Initialization completed');
   } catch (error) {
