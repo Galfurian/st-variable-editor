@@ -48,7 +48,10 @@ export function renderPanel() {
   const closeBtn = document.createElement('button');
   closeBtn.classList.add('fa-solid');
   closeBtn.classList.add('fa-circle-xmark');
-  closeBtn.onclick = togglePanel;
+  closeBtn.onclick = () => {
+    const panel = document.getElementById('variable-editor-panel');
+    if (panel) panel.style.display = 'none';
+  };
   closeBtn.style.border = 'none';
   closeBtn.style.background = 'none';
   closeBtn.style.cursor = 'pointer';
