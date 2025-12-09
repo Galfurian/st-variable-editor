@@ -210,9 +210,12 @@ function renderPanel() {
   addLocalBtn.onclick = () => addVariable('local');
   localHeader.append(addLocalBtn);
 
+  // Store reference to content for toggle handler
+  let localContentRef;
+
   localHeader.onclick = (e) => {
     if (e.target === addLocalBtn) return; // Don't toggle if clicking add button
-    const content = localHeader.nextElementSibling;
+    const content = localContentRef;
     const icon = localHeader.querySelector('.inline-drawer-icon');
     isLocalCollapsed = !isLocalCollapsed;
     if (isLocalCollapsed) {
@@ -229,6 +232,7 @@ function renderPanel() {
   const localContent = document.createElement('div');
   localContent.classList.add('inline-drawer-content');
   localContent.style.display = isLocalCollapsed ? 'none' : 'block';
+  localContentRef = localContent; // Store reference
 
   const localVars = chatMetadata.variables || {};
   for (const key in localVars) {
@@ -267,9 +271,12 @@ function renderPanel() {
   addGlobalBtn.onclick = () => addVariable('global');
   globalHeader.append(addGlobalBtn);
 
+  // Store reference to content for toggle handler
+  let globalContentRef;
+
   globalHeader.onclick = (e) => {
     if (e.target === addGlobalBtn) return; // Don't toggle if clicking add button
-    const content = globalHeader.nextElementSibling;
+    const content = globalContentRef;
     const icon = globalHeader.querySelector('.inline-drawer-icon');
     isGlobalCollapsed = !isGlobalCollapsed;
     if (isGlobalCollapsed) {
@@ -286,6 +293,7 @@ function renderPanel() {
   const globalContent = document.createElement('div');
   globalContent.classList.add('inline-drawer-content');
   globalContent.style.display = isGlobalCollapsed ? 'none' : 'block';
+  globalContentRef = globalContent; // Store reference
 
   const globalVars = extension_settings.variables?.global || {};
   for (const key in globalVars) {
