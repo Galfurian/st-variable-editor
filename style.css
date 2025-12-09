@@ -22,11 +22,6 @@
   color: var(--SmartThemeEmColor, blue);
 }
 
-.variable-editor-panel h4 {
-  margin-top: 20px;
-  color: var(--SmartThemeEmColor, blue);
-}
-
 .variable-editor-panel pre {
   background: var(--black30a, #f4f4f4);
   padding: 10px;
@@ -75,4 +70,65 @@
 
 .var-value {
   flex: 1;
+}
+
+/* Collapsible drawer styles */
+.inline-drawer-toggle {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--SmartThemeBlurTintColor, #f8f9fa);
+  border: 1px solid var(--SmartThemeBorderColor, #dee2e6);
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.inline-drawer-toggle:hover {
+  background: var(--SmartThemeHoverColor, #e9ecef);
+}
+
+.inline-drawer-header {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
+}
+
+.inline-drawer-icon {
+  transition: transform 0.2s ease;
+  font-size: 0.9em;
+}
+
+.inline-drawer-icon.down {
+  transform: rotate(180deg);
+}
+
+.inline-drawer-content {
+  padding: 10px;
+  border: 1px solid var(--SmartThemeBorderColor, #dee2e6);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background: var(--SmartThemeBodyColor, white);
+}
+
+/* FontAwesome button styles */
+.fa-solid.fa-circle-xmark,
+.fa-solid.fa-grip {
+  font-size: 1.2em;
+  color: var(--SmartThemeEmColor, #6c757d);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+.fa-solid.fa-circle-xmark:hover,
+.fa-solid.fa-grip:hover {
+  background: var(--SmartThemeHoverColor, #e9ecef);
+}
+
+.fa-solid.fa-circle-chevron-up {
+  color: var(--SmartThemeEmColor, #6c757d);
 }

@@ -43,50 +43,133 @@ function renderPanel() {
   const panel = document.createElement('div');
   panel.id = 'variable-editor-panel';
   panel.classList.add('variable-editor-panel');
+  panel.classList.add('fillRight');
+  panel.classList.add('openDrawer');
+  panel.classList.add('pinnedOpen');
 
   const title = document.createElement('h3');
   title.textContent = 'Variable Editor';
   panel.append(title);
 
+  const dragHandle = document.createElement('div');
+  dragHandle.id = 'variable-editor-drag-handle';
+  dragHandle.classList.add('drag-grabber');
+  dragHandle.classList.add('fa-solid');
+  dragHandle.classList.add('fa-grip');
+  panel.append(dragHandle);
+
   const closeBtn = document.createElement('button');
-  closeBtn.textContent = 'X';
+  closeBtn.classList.add('fa-solid');
+  closeBtn.classList.add('fa-circle-xmark');
   closeBtn.onclick = togglePanel;
   panel.append(closeBtn);
 
   // Local Variables Section
   const localDiv = document.createElement('div');
   localDiv.classList.add('variable-section');
-  const localTitle = document.createElement('h4');
+  localDiv.classList.add('inline-drawer');
+
+  const localHeader = document.createElement('div');
+  localHeader.classList.add('inline-drawer-toggle');
+  localHeader.classList.add('inline-drawer-header');
+
+  const localTitle = document.createElement('b');
   localTitle.textContent = 'Local Variables';
-  localDiv.append(localTitle);
+  localHeader.append(localTitle);
+
+  const localIcon = document.createElement('div');
+  localIcon.classList.add('inline-drawer-icon');
+  localIcon.classList.add('fa-solid');
+  localIcon.classList.add('fa-circle-chevron-up');
+  localIcon.classList.add('down');
+  localHeader.append(localIcon);
+
+  const addLocalBtn = document.createElement('button');
+  addLocalBtn.textContent = '+';
+  addLocalBtn.title = 'Add Local Variable';
+  addLocalBtn.onclick = () => addVariable('local');
+  localHeader.append(addLocalBtn);
+
+  localHeader.onclick = (e) => {
+    if (e.target === addLocalBtn) return; // Don't toggle if clicking add button
+    const content = localHeader.nextElementSibling;
+    const icon = localHeader.querySelector('.inline-drawer-icon');
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      icon.classList.add('down');
+    } else {
+      content.style.display = 'none';
+      icon.classList.remove('down');
+    }
+  };
+
+  localDiv.append(localHeader);
+
+  const localContent = document.createElement('div');
+  localContent.classList.add('inline-drawer-content');
+  localContent.style.display = 'block';
 
   const localVars = chat_metadata.variables || {};
   for (const key in localVars) {
     const row = createVariableRow(key, localVars[key], 'local');
-    localDiv.append(row);
+    localContent.append(row);
   }
-  const addLocalBtn = document.createElement('button');
-  addLocalBtn.textContent = 'Add Local Variable';
-  addLocalBtn.onclick = () => addVariable('local');
-  localDiv.append(addLocalBtn);
+
+  localDiv.append(localContent);
   panel.append(localDiv);
 
   // Global Variables Section
   const globalDiv = document.createElement('div');
   globalDiv.classList.add('variable-section');
-  const globalTitle = document.createElement('h4');
+  globalDiv.classList.add('inline-drawer');
+
+  const globalHeader = document.createElement('div');
+  globalHeader.classList.add('inline-drawer-toggle');
+  globalHeader.classList.add('inline-drawer-header');
+
+  const globalTitle = document.createElement('b');
   globalTitle.textContent = 'Global Variables';
-  globalDiv.append(globalTitle);
+  globalHeader.append(globalTitle);
+
+  const globalIcon = document.createElement('div');
+  globalIcon.classList.add('inline-drawer-icon');
+  globalIcon.classList.add('fa-solid');
+  globalIcon.classList.add('fa-circle-chevron-up');
+  globalIcon.classList.add('down');
+  globalHeader.append(globalIcon);
+
+  const addGlobalBtn = document.createElement('button');
+  addGlobalBtn.textContent = '+';
+  addGlobalBtn.title = 'Add Global Variable';
+  addGlobalBtn.onclick = () => addVariable('global');
+  globalHeader.append(addGlobalBtn);
+
+  globalHeader.onclick = (e) => {
+    if (e.target === addGlobalBtn) return; // Don't toggle if clicking add button
+    const content = globalHeader.nextElementSibling;
+    const icon = globalHeader.querySelector('.inline-drawer-icon');
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      icon.classList.add('down');
+    } else {
+      content.style.display = 'none';
+      icon.classList.remove('down');
+    }
+  };
+
+  globalDiv.append(globalHeader);
+
+  const globalContent = document.createElement('div');
+  globalContent.classList.add('inline-drawer-content');
+  globalContent.style.display = 'block';
 
   const globalVars = extension_settings.variables?.global || {};
   for (const key in globalVars) {
     const row = createVariableRow(key, globalVars[key], 'global');
-    globalDiv.append(row);
+    globalContent.append(row);
   }
-  const addGlobalBtn = document.createElement('button');
-  addGlobalBtn.textContent = 'Add Global Variable';
-  addGlobalBtn.onclick = () => addVariable('global');
-  globalDiv.append(addGlobalBtn);
+
+  globalDiv.append(globalContent);
   panel.append(globalDiv);
 
   document.body.append(panel);
