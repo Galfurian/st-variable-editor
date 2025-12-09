@@ -53,6 +53,10 @@
   align-items: center;
   margin: 5px 0;
   gap: 10px;
+  padding: 5px;
+  background: var(--SmartThemeAlternateBackgroundColor, #f8f9fa);
+  border-radius: 3px;
+  border: 1px solid var(--SmartThemeBorderColor, #dee2e6);
 }
 
 .var-name, .var-value {
@@ -60,8 +64,8 @@
   padding: 5px;
   border: 1px solid var(--SmartThemeBorderColor, #ccc);
   border-radius: 3px;
-  background: var(--SmartThemeBodyColor, white);
-  color: var(--SmartThemeEmColor, black);
+  background: var(--SmartThemeBlurTintColor, white);
+  color: var(--SmartThemeBodyColor, black);
 }
 
 .var-name {
