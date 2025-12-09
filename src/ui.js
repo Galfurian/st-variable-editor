@@ -23,21 +23,39 @@ export function renderPanel() {
   // Remove existing panel if it exists
   document.getElementById('variable-editor-panel')?.remove();
 
-  // Create the panel
+  // Create and setup the panel
+  const panel = createPanel();
+  setupResize(panel);
+  panel.appendChild(createHeader());
+  panel.appendChild(createDragHandle());
+  panel.appendChild(createVariableSection('Local Variables', true));
+  panel.appendChild(createVariableSection('Global Variables', false));
+
+  document.body.appendChild(panel);
+  console.log('[Variable Editor] Panel appended to body');
+
+  // Update previous variable states
+  updatePreviousVars(chat_metadata.variables || {}, extensionSettings.variables?.global || {});
+  console.log('[Variable Editor] renderPanel completed');
+
+  // Start the continuous update loop
+  startUpdateLoop();
+}
+
+// Helper functions for panel creation
+
+/** Creates the main panel container */
+function createPanel() {
   const panel = document.createElement('div');
   panel.id = 'variable-editor-panel';
-  panel.classList.add('variable-editor-panel');
-  // Note: 'fillRight' usually implies full height/fixed width in some ST themes. 
-  // If resizing acts weird, try removing 'fillRight' and relying on your own CSS.
-  panel.classList.add('fillRight'); 
-  panel.classList.add('openDrawer');
-  panel.classList.add('pinnedOpen');
+  panel.classList.add('variable-editor-panel', 'fillRight', 'openDrawer', 'pinnedOpen');
+  return panel;
+}
 
-  // ---------------------------------------------------------
-  // START: RESIZE LOGIC
-  // ---------------------------------------------------------
+/** Sets up the resize functionality for the panel */
+function setupResize(panel) {
   const resizeHandle = document.createElement('div');
-  resizeHandle.classList.add('resize-handle'); // Must match CSS below
+  resizeHandle.classList.add('resize-handle');
   panel.appendChild(resizeHandle);
 
   let isResizing = false;
@@ -47,24 +65,16 @@ export function renderPanel() {
     isResizing = true;
     startX = e.clientX;
     startWidth = panel.getBoundingClientRect().width;
-    
-    // Global cursor/select style to prevent text highlighting while dragging
     document.body.style.cursor = 'ew-resize';
     document.body.style.userSelect = 'none';
-    
-    // Attach listeners to document so you don't lose focus if mouse moves fast
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   });
 
   const onMouseMove = (e) => {
     if (!isResizing) return;
-    // Calculate distance moved. 
-    // Moving LEFT (negative X) should INCREASE width for a right-side panel.
     const dx = startX - e.clientX;
     const newWidth = startWidth + dx;
-
-    // Set min/max limits
     if (newWidth > 300 && newWidth < window.innerWidth * 0.8) {
       panel.style.width = `${newWidth}px`;
     }
@@ -77,11 +87,10 @@ export function renderPanel() {
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
   };
-  // ---------------------------------------------------------
-  // END: RESIZE LOGIC
-  // ---------------------------------------------------------
+}
 
-  // Create header with title and close button
+/** Creates the header with title and close button */
+function createHeader() {
   const header = document.createElement('div');
   header.classList.add('variable-editor-header');
   header.style.display = 'flex';
@@ -95,15 +104,13 @@ export function renderPanel() {
   header.append(title);
 
   const closeBtn = document.createElement('button');
-  closeBtn.classList.add('fa-solid');
-  closeBtn.classList.add('fa-circle-xmark');
+  closeBtn.classList.add('fa-solid', 'fa-circle-xmark');
   closeBtn.onclick = () => {
     const { extensionSettings } = SillyTavern.getContext();
     extensionSettings[extensionName].isShown = false;
     const panel = document.getElementById('variable-editor-panel');
     if (panel) panel.style.display = 'none';
   };
-  // Using a class for these styles is cleaner, but keeping your inline styles for now:
   closeBtn.style.border = 'none';
   closeBtn.style.background = 'none';
   closeBtn.style.cursor = 'pointer';
@@ -112,89 +119,60 @@ export function renderPanel() {
   closeBtn.style.padding = '5px';
   header.append(closeBtn);
 
-  panel.append(header);
+  return header;
+}
 
-  // Existing Drag Handle (Likely for moving the panel, keeping it as requested)
+/** Creates the drag handle for moving the panel */
+function createDragHandle() {
   const dragHandle = document.createElement('div');
   dragHandle.id = 'variable-editor-drag-handle';
-  dragHandle.classList.add('drag-grabber');
-  dragHandle.classList.add('fa-solid');
-  dragHandle.classList.add('fa-grip');
-  panel.append(dragHandle);
+  dragHandle.classList.add('drag-grabber', 'fa-solid', 'fa-grip');
+  return dragHandle;
+}
 
-  // Local Variables Section
-  const localDiv = document.createElement('div');
-  localDiv.classList.add('variable-section');
+/** Creates a variable section (local or global) with items and add row */
+function createVariableSection(title, isLocal) {
+  const { extensionSettings } = SillyTavern.getContext();
 
-  const localHeader = document.createElement('div');
-  localHeader.classList.add('variable-editor-header');
+  const div = document.createElement('div');
+  div.classList.add('variable-section');
 
-  const localTitle = document.createElement('b');
-  localTitle.textContent = 'Local Variables';
-  localHeader.append(localTitle);
+  const sectionHeader = document.createElement('div');
+  sectionHeader.classList.add('variable-editor-header');
 
-  localDiv.append(localHeader);
+  const sectionTitle = document.createElement('b');
+  sectionTitle.textContent = title;
+  sectionHeader.append(sectionTitle);
 
-  const localContent = document.createElement('div');
-  localContent.classList.add('variable-content');
-  localContentRef = localContent; // Store reference
+  div.append(sectionHeader);
 
-  // Clear and recreate local items
-  localItems = [];
-  const localVars = chat_metadata.variables || {};
-  for (const key in localVars) {
-    const item = new VariableItem(key, localVars[key], 'local');
-    localItems.push(item);
-    localContent.append(item.render());
+  const content = document.createElement('div');
+  content.classList.add('variable-content');
+
+  if (isLocal) {
+    localContentRef = content;
+    localItems = [];
+    const vars = chat_metadata.variables || {};
+    for (const key in vars) {
+      const item = new VariableItem(key, vars[key], 'local');
+      localItems.push(item);
+      content.append(item.render());
+    }
+    content.append(createAddRow('local'));
+  } else {
+    globalContentRef = content;
+    globalItems = [];
+    const vars = extensionSettings.variables?.global || {};
+    for (const key in vars) {
+      const item = new VariableItem(key, vars[key], 'global');
+      globalItems.push(item);
+      content.append(item.render());
+    }
+    content.append(createAddRow('global'));
   }
 
-  // Add the add row at the bottom
-  localContent.append(createAddRow('local'));
-
-  localDiv.append(localContent);
-  panel.append(localDiv);
-
-  // Global Variables Section
-  const globalDiv = document.createElement('div');
-  globalDiv.classList.add('variable-section');
-
-  const globalHeader = document.createElement('div');
-  globalHeader.classList.add('variable-editor-header');
-
-  const globalTitle = document.createElement('b');
-  globalTitle.textContent = 'Global Variables';
-  globalHeader.append(globalTitle);
-
-  globalDiv.append(globalHeader);
-
-  const globalContent = document.createElement('div');
-  globalContent.classList.add('variable-content');
-  globalContentRef = globalContent; // Store reference
-
-  // Clear and recreate global items
-  globalItems = [];
-  const globalVars = extensionSettings.variables?.global || {};
-  for (const key in globalVars) {
-    const item = new VariableItem(key, globalVars[key], 'global');
-    globalItems.push(item);
-    globalContent.append(item.render());
-  }
-
-  // Add the add row at the bottom
-  globalContent.append(createAddRow('global'));
-
-  globalDiv.append(globalContent);
-  panel.append(globalDiv);
-
-  document.body.append(panel);
-  console.log('[Variable Editor] Panel appended to body');
-
-  // Update previous variable states
-  updatePreviousVars(chat_metadata.variables || {}, extensionSettings.variables?.global || {});
-  console.log('[Variable Editor] renderPanel completed');
-
-  // Start the continuous update loop
-  startUpdateLoop();
+  div.append(content);
+  return div;
 }
 
 // Remove the panel from DOM
