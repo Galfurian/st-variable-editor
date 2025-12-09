@@ -4,6 +4,12 @@ import { chat_metadata } from "../../../../../script.js";
 // Extension configuration
 const extensionName = "st-variable-editor";
 
+// Variable types
+const VARIABLE_TYPE = {
+  LOCAL: 'local',
+  GLOBAL: 'global'
+};
+
 // Variable item class for better management
 class VariableItem {
   constructor(key, value, type) {
@@ -15,47 +21,63 @@ class VariableItem {
     this.valueInput = null;
   }
 
+  /** Renders the variable item as a DOM element */
   render() {
     if (this.row) return this.row;
 
     this.row = document.createElement('div');
     this.row.classList.add('variable-row');
 
-    this.nameInput = document.createElement('input');
-    this.nameInput.type = 'text';
-    this.nameInput.value = this.key;
-    this.nameInput.classList.add('var-name');
-    this.nameInput.setAttribute('data-var-key', this.key);
-    this.nameInput.setAttribute('data-var-type', this.type);
-    this.nameInput.onchange = () => updateVariableName(this.key, this.nameInput.value, this.type);
+    this.nameInput = this.createNameInput();
+    this.valueInput = this.createValueInput();
+    const deleteBtn = this.createDeleteButton();
 
-    this.valueInput = document.createElement('input');
-    this.valueInput.type = 'text';
-    this.valueInput.value = this.value;
-    this.valueInput.classList.add('var-value');
-    this.valueInput.setAttribute('data-var-key', this.key);
-    this.valueInput.setAttribute('data-var-type', this.type);
-    this.valueInput.onchange = () => updateVariableValue(this.nameInput.value, this.valueInput.value, this.type);
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.classList.add('fa-solid', 'fa-circle-xmark');
-    deleteBtn.title = 'Delete variable';
-    deleteBtn.onclick = () => {
-      if (deleteBtn.classList.contains('confirm-delete')) {
-        deleteVariable(this.key, this.type);
-      } else {
-        deleteBtn.classList.add('confirm-delete');
-        deleteBtn.title = 'Click again to confirm deletion';
-      }
-    };
-
-    this.row.append(this.nameInput);
-    this.row.append(this.valueInput);
-    this.row.append(deleteBtn);
+    this.row.append(this.nameInput, this.valueInput, deleteBtn);
 
     return this.row;
   }
 
+  /** Creates the name input element */
+  createNameInput() {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = this.key;
+    input.classList.add('var-name');
+    input.setAttribute('data-var-key', this.key);
+    input.setAttribute('data-var-type', this.type);
+    input.onchange = () => updateVariableName(this.key, input.value, this.type);
+    return input;
+  }
+
+  /** Creates the value input element */
+  createValueInput() {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = this.value;
+    input.classList.add('var-value');
+    input.setAttribute('data-var-key', this.key);
+    input.setAttribute('data-var-type', this.type);
+    input.onchange = () => updateVariableValue(this.nameInput.value, input.value, this.type);
+    return input;
+  }
+
+  /** Creates the delete button with confirmation logic */
+  createDeleteButton() {
+    const button = document.createElement('button');
+    button.classList.add('fa-solid', 'fa-circle-xmark');
+    button.title = 'Delete variable';
+    button.onclick = () => {
+      if (button.classList.contains('confirm-delete')) {
+        deleteVariable(this.key, this.type);
+      } else {
+        button.classList.add('confirm-delete');
+        button.title = 'Click again to confirm deletion';
+      }
+    };
+    return button;
+  }
+
+  /** Updates the value input with new value */
   update(newValue) {
     if (this.valueInput) {
       this.valueInput.value = newValue;
@@ -63,6 +85,7 @@ class VariableItem {
     this.value = newValue;
   }
 
+  /** Removes the row from DOM */
   remove() {
     if (this.row) {
       this.row.remove();
@@ -73,6 +96,7 @@ class VariableItem {
 export { VariableItem };
 
 // Create an add row element
+/** Creates a row for adding new variables */
 export function createAddRow(type) {
   const row = document.createElement('div');
   row.classList.add('variable-row');
@@ -110,7 +134,7 @@ export function createAddRow(type) {
   return row;
 }
 
-// Add a new variable
+/** Adds a new variable to the specified scope */
 export async function addVariable(type, providedName, providedValue) {
   const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
 
@@ -139,7 +163,7 @@ export async function addVariable(type, providedName, providedValue) {
   return true;
 }
 
-// Delete a variable
+/** Deletes a variable from the specified scope */
 export async function deleteVariable(key, type) {
   const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
 
@@ -159,7 +183,7 @@ export async function deleteVariable(key, type) {
   renderPanel();
 }
 
-// Update variable name
+/** Updates the name of an existing variable */
 export async function updateVariableName(oldKey, newKey, type) {
   const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
   if (oldKey === newKey) return;
@@ -183,7 +207,7 @@ export async function updateVariableName(oldKey, newKey, type) {
   renderPanel();
 }
 
-// Update variable value
+/** Updates the value of an existing variable */
 export function updateVariableValue(key, value, type) {
   const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
   if (type === 'local') {
@@ -198,7 +222,7 @@ export function updateVariableValue(key, value, type) {
   saveSettingsDebounced();
 }
 
-// Loads the extension settings if they exist, otherwise initializes them to the defaults.
+/** Loads the extension settings if they exist, otherwise initializes them to the defaults */
 export async function loadSettings() {
   const { extensionSettings } = SillyTavern.getContext();
   //Create the settings if they don't exist
