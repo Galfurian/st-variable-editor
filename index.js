@@ -266,6 +266,9 @@ function unrenderPanel() {
 
 // This function is called when the extension is loaded
 jQuery(async () => {
+  const context = SillyTavern.getContext();
+  const { eventSource, event_types } = context;
+
   // Load settings
   loadSettings();
 
@@ -276,4 +279,23 @@ jQuery(async () => {
   if (extension_settings[extensionName].isShown) {
     renderPanel();
   }
+
+  // Add event listeners for dynamic updates
+  eventSource.on(event_types.CHAT_CHANGED, () => {
+    if (extension_settings[extensionName].isShown) {
+      renderPanel();
+    }
+  });
+
+  eventSource.on(event_types.MESSAGE_RECEIVED, () => {
+    if (extension_settings[extensionName].isShown) {
+      renderPanel();
+    }
+  });
+
+  eventSource.on(event_types.MESSAGE_SENT, () => {
+    if (extension_settings[extensionName].isShown) {
+      renderPanel();
+    }
+  });
 });
