@@ -4,36 +4,70 @@ import { chat_metadata } from "../../../../../script.js";
 // Extension configuration
 const extensionName = "st-variable-editor";
 
-// Create a variable row element
+// Variable item class for better management
+class VariableItem {
+  constructor(key, value, type) {
+    this.key = key;
+    this.value = value;
+    this.type = type;
+    this.row = null;
+    this.nameInput = null;
+    this.valueInput = null;
+  }
+
+  render() {
+    if (this.row) return this.row;
+
+    this.row = document.createElement('div');
+    this.row.classList.add('variable-row');
+
+    this.nameInput = document.createElement('input');
+    this.nameInput.type = 'text';
+    this.nameInput.value = this.key;
+    this.nameInput.classList.add('var-name');
+    this.nameInput.setAttribute('data-var-key', this.key);
+    this.nameInput.setAttribute('data-var-type', this.type);
+    this.nameInput.onchange = () => updateVariableName(this.key, this.nameInput.value, this.type);
+
+    this.valueInput = document.createElement('input');
+    this.valueInput.type = 'text';
+    this.valueInput.value = this.value;
+    this.valueInput.classList.add('var-value');
+    this.valueInput.setAttribute('data-var-key', this.key);
+    this.valueInput.setAttribute('data-var-type', this.type);
+    this.valueInput.onchange = () => updateVariableValue(this.nameInput.value, this.valueInput.value, this.type);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.onclick = () => deleteVariable(this.key, this.type);
+
+    this.row.append(this.nameInput);
+    this.row.append(this.valueInput);
+    this.row.append(deleteBtn);
+
+    return this.row;
+  }
+
+  update(newValue) {
+    if (this.valueInput) {
+      this.valueInput.value = newValue;
+    }
+    this.value = newValue;
+  }
+
+  remove() {
+    if (this.row) {
+      this.row.remove();
+    }
+  }
+}
+
+export { VariableItem };
+
+// Create a variable row element (legacy, kept for compatibility)
 export function createVariableRow(key, value, type) {
-  const row = document.createElement('div');
-  row.classList.add('variable-row');
-
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.value = key;
-  nameInput.classList.add('var-name');
-  nameInput.setAttribute('data-var-key', key);
-  nameInput.setAttribute('data-var-type', type);
-  nameInput.onchange = () => updateVariableName(key, nameInput.value, type);
-
-  const valueInput = document.createElement('input');
-  valueInput.type = 'text';
-  valueInput.value = value;
-  valueInput.classList.add('var-value');
-  valueInput.setAttribute('data-var-key', key);
-  valueInput.setAttribute('data-var-type', type);
-  valueInput.onchange = () => updateVariableValue(nameInput.value, valueInput.value, type);
-
-  const deleteBtn = document.createElement('button');
-  deleteBtn.textContent = 'Delete';
-  deleteBtn.onclick = () => deleteVariable(key, type);
-
-  row.append(nameInput);
-  row.append(valueInput);
-  row.append(deleteBtn);
-
-  return row;
+  const item = new VariableItem(key, value, type);
+  return item.render();
 }
 
 // Add a new variable

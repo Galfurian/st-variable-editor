@@ -1,7 +1,7 @@
 // UI rendering and DOM manipulation for Variable Editor
 import { chat_metadata } from "../../../../../script.js";
-import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue } from './utils.js';
-import { startUpdateLoop, stopUpdateLoop, storeInputReferences, updatePreviousVars } from './state.js';
+import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue, VariableItem } from './utils.js';
+import { startUpdateLoop, stopUpdateLoop, updatePreviousVars } from './state.js';
 
 // Extension configuration
 const extensionName = "st-variable-editor";
@@ -9,9 +9,9 @@ const extensionName = "st-variable-editor";
 // Store references to content elements for toggle handlers
 let localContentRef, globalContentRef;
 
-// Keep references to current input elements for efficient updates
-let localVarInputs = new Map();
-let globalVarInputs = new Map();
+// Variable item lists for better management
+let localItems = [];
+let globalItems = [];
 
 // Render the variable editor panel
 export function renderPanel() {
@@ -93,10 +93,13 @@ export function renderPanel() {
   localContent.classList.add('variable-content');
   localContentRef = localContent; // Store reference
 
+  // Clear and recreate local items
+  localItems = [];
   const localVars = chat_metadata.variables || {};
   for (const key in localVars) {
-    const row = createVariableRow(key, localVars[key], 'local');
-    localContent.append(row);
+    const item = new VariableItem(key, localVars[key], 'local');
+    localItems.push(item);
+    localContent.append(item.render());
   }
 
   localDiv.append(localContent);
@@ -125,10 +128,13 @@ export function renderPanel() {
   globalContent.classList.add('variable-content');
   globalContentRef = globalContent; // Store reference
 
+  // Clear and recreate global items
+  globalItems = [];
   const globalVars = extensionSettings.variables?.global || {};
   for (const key in globalVars) {
-    const row = createVariableRow(key, globalVars[key], 'global');
-    globalContent.append(row);
+    const item = new VariableItem(key, globalVars[key], 'global');
+    globalItems.push(item);
+    globalContent.append(item.render());
   }
 
   globalDiv.append(globalContent);
@@ -136,9 +142,6 @@ export function renderPanel() {
 
   document.body.append(panel);
   console.log('[Variable Editor] Panel appended to body');
-
-  // Store input references for efficient updates
-  storeInputReferences(localVars, globalVars);
 
   // Update previous variable states
   updatePreviousVars(chat_metadata.variables || {}, extensionSettings.variables?.global || {});
@@ -160,46 +163,44 @@ export function unrenderPanel() {
 // Update existing input elements with new variable values
 export function updateExistingInputs(localVars, globalVars) {
   // Update local variables
-  for (const [key, input] of localVarInputs) {
-    if (localVars[key] !== undefined) {
-      input.value = localVars[key];
-    } else {
-      // Variable removed, remove the input
-      input.closest('.variable-row').remove();
-      localVarInputs.delete(key);
+  localItems = localItems.filter(item => {
+    if (localVars[item.key] === undefined) {
+      item.remove();
+      return false;
     }
-  }
+    if (localVars[item.key] !== item.value) {
+      item.update(localVars[item.key]);
+    }
+    return true;
+  });
 
   // Add new local variables
   for (const key in localVars) {
-    if (!localVarInputs.has(key)) {
-      const row = createVariableRow(key, localVars[key], 'local');
-      localContentRef.append(row);
-      // Update the map
-      const input = row.querySelector('.var-value');
-      if (input) localVarInputs.set(key, input);
+    if (!localItems.find(item => item.key === key)) {
+      const item = new VariableItem(key, localVars[key], 'local');
+      localItems.push(item);
+      localContentRef.append(item.render());
     }
   }
 
   // Update global variables
-  for (const [key, input] of globalVarInputs) {
-    if (globalVars[key] !== undefined) {
-      input.value = globalVars[key];
-    } else {
-      // Variable removed, remove the input
-      input.closest('.variable-row').remove();
-      globalVarInputs.delete(key);
+  globalItems = globalItems.filter(item => {
+    if (globalVars[item.key] === undefined) {
+      item.remove();
+      return false;
     }
-  }
+    if (globalVars[item.key] !== item.value) {
+      item.update(globalVars[item.key]);
+    }
+    return true;
+  });
 
   // Add new global variables
   for (const key in globalVars) {
-    if (!globalVarInputs.has(key)) {
-      const row = createVariableRow(key, globalVars[key], 'global');
-      globalContentRef.append(row);
-      // Update the map
-      const input = row.querySelector('.var-value');
-      if (input) globalVarInputs.set(key, input);
+    if (!globalItems.find(item => item.key === key)) {
+      const item = new VariableItem(key, globalVars[key], 'global');
+      globalItems.push(item);
+      globalContentRef.append(item.render());
     }
   }
 }
