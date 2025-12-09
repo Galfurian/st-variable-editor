@@ -28,6 +28,10 @@ let globalVarInputs = new Map();
 // Flag to control the update loop
 let isUpdating = false;
 
+// Track collapsed/expanded state of sections
+let isLocalCollapsed = false;
+let isGlobalCollapsed = false;
+
 // Continuous update loop like the original Variable Viewer
 async function startUpdateLoop() {
   if (isUpdating) return;
@@ -195,7 +199,9 @@ function renderPanel() {
   localIcon.classList.add('inline-drawer-icon');
   localIcon.classList.add('fa-solid');
   localIcon.classList.add('fa-circle-chevron-up');
-  localIcon.classList.add('down');
+  if (!isLocalCollapsed) {
+    localIcon.classList.add('down');
+  }
   localHeader.append(localIcon);
 
   const addLocalBtn = document.createElement('button');
@@ -208,12 +214,13 @@ function renderPanel() {
     if (e.target === addLocalBtn) return; // Don't toggle if clicking add button
     const content = localHeader.nextElementSibling;
     const icon = localHeader.querySelector('.inline-drawer-icon');
-    if (content.style.display === 'none') {
-      content.style.display = 'block';
-      icon.classList.add('down');
-    } else {
+    isLocalCollapsed = !isLocalCollapsed;
+    if (isLocalCollapsed) {
       content.style.display = 'none';
       icon.classList.remove('down');
+    } else {
+      content.style.display = 'block';
+      icon.classList.add('down');
     }
   };
 
@@ -221,7 +228,7 @@ function renderPanel() {
 
   const localContent = document.createElement('div');
   localContent.classList.add('inline-drawer-content');
-  localContent.style.display = 'block';
+  localContent.style.display = isLocalCollapsed ? 'none' : 'block';
 
   const localVars = chatMetadata.variables || {};
   for (const key in localVars) {
@@ -249,7 +256,9 @@ function renderPanel() {
   globalIcon.classList.add('inline-drawer-icon');
   globalIcon.classList.add('fa-solid');
   globalIcon.classList.add('fa-circle-chevron-up');
-  globalIcon.classList.add('down');
+  if (!isGlobalCollapsed) {
+    globalIcon.classList.add('down');
+  }
   globalHeader.append(globalIcon);
 
   const addGlobalBtn = document.createElement('button');
@@ -262,12 +271,13 @@ function renderPanel() {
     if (e.target === addGlobalBtn) return; // Don't toggle if clicking add button
     const content = globalHeader.nextElementSibling;
     const icon = globalHeader.querySelector('.inline-drawer-icon');
-    if (content.style.display === 'none') {
-      content.style.display = 'block';
-      icon.classList.add('down');
-    } else {
+    isGlobalCollapsed = !isGlobalCollapsed;
+    if (isGlobalCollapsed) {
       content.style.display = 'none';
       icon.classList.remove('down');
+    } else {
+      content.style.display = 'block';
+      icon.classList.add('down');
     }
   };
 
@@ -275,7 +285,7 @@ function renderPanel() {
 
   const globalContent = document.createElement('div');
   globalContent.classList.add('inline-drawer-content');
-  globalContent.style.display = 'block';
+  globalContent.style.display = isGlobalCollapsed ? 'none' : 'block';
 
   const globalVars = extension_settings.variables?.global || {};
   for (const key in globalVars) {
