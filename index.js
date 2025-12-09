@@ -42,16 +42,7 @@ function renderPanel() {
   // Create the panel
   const panel = document.createElement('div');
   panel.id = 'variable-editor-panel';
-  panel.style.position = 'fixed';
-  panel.style.top = '100px';
-  panel.style.right = '10px';
-  panel.style.width = '300px';
-  panel.style.maxHeight = '80vh';
-  panel.style.overflow = 'auto';
-  panel.style.background = 'white';
-  panel.style.border = '1px solid black';
-  panel.style.padding = '10px';
-  panel.style.zIndex = '1000';
+  panel.classList.add('variable-editor-panel');
 
   const title = document.createElement('h3');
   title.textContent = 'Variable Editor';
