@@ -103,7 +103,7 @@
 }
 
 .value-updated {
-  animation: value-blink 0.3s ease-in-out;
+  animation: value-blink 0.6s ease-in-out;
 }
 
 @keyframes value-blink {

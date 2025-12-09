@@ -225,7 +225,7 @@ export function updateExistingInputs(localVars, globalVars) {
       // Add blink effect
       if (item.valueInput) {
         item.valueInput.classList.add('value-updated');
-        setTimeout(() => item.valueInput.classList.remove('value-updated'), 300);
+        setTimeout(() => item.valueInput.classList.remove('value-updated'), 600);
       }
     }
     return true;
@@ -251,7 +251,7 @@ export function updateExistingInputs(localVars, globalVars) {
       // Add blink effect
       if (item.valueInput) {
         item.valueInput.classList.add('value-updated');
-        setTimeout(() => item.valueInput.classList.remove('value-updated'), 300);
+        setTimeout(() => item.valueInput.classList.remove('value-updated'), 600);
       }
     }
     return true;
