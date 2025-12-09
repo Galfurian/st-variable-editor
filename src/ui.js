@@ -1,6 +1,6 @@
 // UI rendering and DOM manipulation for Variable Editor
 import { chat_metadata } from "../../../../../script.js";
-import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue, VariableItem } from './utils.js';
+import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue, VariableItem, createAddRow } from './utils.js';
 import { startUpdateLoop, stopUpdateLoop, updatePreviousVars } from './state.js';
 
 // Extension configuration
@@ -133,12 +133,6 @@ export function renderPanel() {
   localTitle.textContent = 'Local Variables';
   localHeader.append(localTitle);
 
-  const addLocalBtn = document.createElement('button');
-  addLocalBtn.textContent = '+';
-  addLocalBtn.title = 'Add Local Variable';
-  addLocalBtn.onclick = () => addVariable('local');
-  localHeader.append(addLocalBtn);
-
   localDiv.append(localHeader);
 
   const localContent = document.createElement('div');
@@ -154,6 +148,9 @@ export function renderPanel() {
     localContent.append(item.render());
   }
 
+  // Add the add row at the bottom
+  localContent.append(createAddRow('local'));
+
   localDiv.append(localContent);
   panel.append(localDiv);
 
@@ -167,12 +164,6 @@ export function renderPanel() {
   const globalTitle = document.createElement('b');
   globalTitle.textContent = 'Global Variables';
   globalHeader.append(globalTitle);
-
-  const addGlobalBtn = document.createElement('button');
-  addGlobalBtn.textContent = '+';
-  addGlobalBtn.title = 'Add Global Variable';
-  addGlobalBtn.onclick = () => addVariable('global');
-  globalHeader.append(addGlobalBtn);
 
   globalDiv.append(globalHeader);
 
@@ -188,6 +179,9 @@ export function renderPanel() {
     globalItems.push(item);
     globalContent.append(item.render());
   }
+
+  // Add the add row at the bottom
+  globalContent.append(createAddRow('global'));
 
   globalDiv.append(globalContent);
   panel.append(globalDiv);

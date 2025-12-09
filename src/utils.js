@@ -65,10 +65,34 @@ class VariableItem {
 
 export { VariableItem };
 
-// Create a variable row element (legacy, kept for compatibility)
-export function createVariableRow(key, value, type) {
-  const item = new VariableItem(key, value, type);
-  return item.render();
+// Create an add row element
+export function createAddRow(type) {
+  const row = document.createElement('div');
+  row.classList.add('variable-row');
+
+  const nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.placeholder = 'New variable name';
+  nameInput.classList.add('var-name');
+
+  const valueInput = document.createElement('input');
+  valueInput.type = 'text';
+  valueInput.placeholder = 'New variable value';
+  valueInput.classList.add('var-value');
+
+  const addBtn = document.createElement('div');
+  addBtn.classList.add('menu_button', 'menu_button_icon');
+  addBtn.title = 'Add variable';
+  const icon = document.createElement('i');
+  icon.classList.add('fa-fw', 'fa-solid', 'fa-file-circle-plus');
+  addBtn.append(icon);
+  addBtn.onclick = () => addVariable(type);
+
+  row.append(nameInput);
+  row.append(valueInput);
+  row.append(addBtn);
+
+  return row;
 }
 
 // Add a new variable

@@ -172,6 +172,22 @@
   color: var(--SmartThemeEmColor, #6c757d);
 }
 
+/* Menu button styles for add icon */
+.menu_button_icon {
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  color: var(--SmartThemeEmColor, #6c757d);
+}
+
+.menu_button_icon:hover {
+  background: var(--SmartThemeHoverColor, #e9ecef);
+}
+
 /* The Resize Handle */
 .resize-handle {
   position: absolute;
