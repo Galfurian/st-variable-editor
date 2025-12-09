@@ -26,10 +26,16 @@ if (!extension_settings[extensionName]) {
 // Toggle panel visibility
 function togglePanel() {
   extension_settings[extensionName].isShown = !extension_settings[extensionName].isShown;
-  if (extension_settings[extensionName].isShown) {
+  const panel = document.getElementById('variable-editor-panel');
+  if (panel) {
+    if (extension_settings[extensionName].isShown) {
+      panel.style.display = 'block';
+    } else {
+      panel.style.display = 'none';
+    }
+  } else if (extension_settings[extensionName].isShown) {
+    // Panel doesn't exist yet, render it
     renderPanel();
-  } else {
-    unrenderPanel();
   }
   saveSettingsDebounced();
 }
@@ -45,19 +51,21 @@ jQuery(async () => {
     console.log('[Variable Editor] Got context');
     const { eventSource, event_types } = context;
 
-    // Initial render if shown
-    if (extension_settings[extensionName].isShown) {
-      console.log('[Variable Editor] Initial render - isShown is true');
-      renderPanel();
-    } else {
-      console.log('[Variable Editor] Initial render - isShown is false');
+    // Always render the panel (but keep it hidden initially)
+    renderPanel();
+    const panel = document.getElementById('variable-editor-panel');
+    if (panel) {
+      panel.style.display = extension_settings[extensionName].isShown ? 'block' : 'none';
     }
 
     // Add event listeners for dynamic updates
     eventSource.on(event_types.CHAT_CHANGED, () => {
       console.log('[Variable Editor] Chat changed event');
-      if (extension_settings[extensionName].isShown) {
-        renderPanel();
+      // Re-render the panel when chat changes
+      renderPanel();
+      const panel = document.getElementById('variable-editor-panel');
+      if (panel) {
+        panel.style.display = extension_settings[extensionName].isShown ? 'block' : 'none';
       }
     });
 
