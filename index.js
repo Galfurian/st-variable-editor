@@ -26,16 +26,11 @@ if (!extension_settings[extensionName]) {
 // Register slash command immediately (like temp_viewer does)
 registerSlashCommand('variableeditor', () => {
   extension_settings[extensionName].isShown = !extension_settings[extensionName].isShown;
-  const panel = document.getElementById('variable-editor-panel');
-  if (panel) {
-    if (extension_settings[extensionName].isShown) {
-      panel.style.display = 'block';
-    } else {
-      panel.style.display = 'none';
-    }
-  } else if (extension_settings[extensionName].isShown) {
-    // Panel doesn't exist yet, render it
+  if (extension_settings[extensionName].isShown) {
     renderPanel();
+  } else {
+    const panel = document.getElementById('variable-editor-panel');
+    if (panel) panel.style.display = 'none';
   }
   saveSettingsDebounced();
 }, [], 'show / hide the variable editor panel', true, true);
