@@ -4,6 +4,9 @@ import { chat_metadata } from "../../../../../script.js";
 // Extension configuration
 const EXTENSION_NAME = "st-variable-editor";
 
+// Debug prefix for console messages
+const CONSOLE_PREFIX = '[Variable Editor] ';
+
 // Store previous variable states to detect changes
 let previousLocalVars = JSON.stringify({});
 let previousGlobalVars = JSON.stringify({});
@@ -43,7 +46,7 @@ export async function startUpdateLoop() {
       // Wait 100ms before next check (faster updates)
       await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
-      console.error('[Variable Editor] Error in update loop:', error);
+      console.error(CONSOLE_PREFIX, 'Error in update loop:', error);
       await new Promise(resolve => setTimeout(resolve, 500)); // Wait longer on error
     }
   }

@@ -4,6 +4,9 @@ import { chat_metadata } from "../../../../../script.js";
 // Extension configuration
 const extensionName = "st-variable-editor";
 
+// Debug prefix for console messages
+const CONSOLE_PREFIX = '[Variable Editor] ';
+
 // Variable item class for better management.
 class VariableItem {
   constructor(key, value, type) {
@@ -157,7 +160,7 @@ export async function addVariable(type, providedName, providedValue) {
     await renderPanel();
     return true;
   } catch (error) {
-    console.error('[Variable Editor] Error adding variable:', error);
+    console.error(CONSOLE_PREFIX, 'Error adding variable:', error);
     toastr.error('Failed to add variable. Please try again.');
     return false;
   }
@@ -183,7 +186,7 @@ export async function deleteVariable(key, type) {
     const { renderPanel } = await import('./ui.js');
     await renderPanel();
   } catch (error) {
-    console.error('[Variable Editor] Error deleting variable:', error);
+    console.error(CONSOLE_PREFIX, 'Error deleting variable:', error);
     toastr.error('Failed to delete variable. Please try again.');
   }
 }
@@ -212,7 +215,7 @@ export async function updateVariableName(oldKey, newKey, type) {
     const { renderPanel } = await import('./ui.js');
     await renderPanel();
   } catch (error) {
-    console.error('[Variable Editor] Error updating variable name:', error);
+    console.error(CONSOLE_PREFIX, 'Error updating variable name:', error);
     toastr.error('Failed to update variable name. Please try again.');
   }
 }
@@ -238,7 +241,7 @@ export async function updateVariableValue(key, value, type) {
     const { renderPanel } = await import('./ui.js');
     await renderPanel();
   } catch (error) {
-    console.error('[Variable Editor] Error updating variable value:', error);
+    console.error(CONSOLE_PREFIX, 'Error updating variable value:', error);
     toastr.error('Failed to update variable value. Please try again.');
   }
 }
