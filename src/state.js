@@ -1,5 +1,5 @@
 // State management and update logic for Variable Editor
-// import { extension_settings } from "../../../extensions.js";
+import { extension_settings } from "../../../extensions.js";
 
 // Extension configuration
 const extensionName = "st-variable-editor";
