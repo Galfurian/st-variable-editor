@@ -30,6 +30,9 @@ function togglePanel() {
   saveSettingsDebounced();
 }
 
+// Register slash command immediately (like temp_viewer does)
+registerSlashCommand('variableeditor', togglePanel, [], 'show / hide the variable editor panel', true, true);
+
 // This function is called when the extension is loaded
 jQuery(async () => {
   try {
@@ -37,14 +40,6 @@ jQuery(async () => {
     const context = SillyTavern.getContext();
     console.log('[Variable Editor] Got context');
     const { eventSource, event_types } = context;
-
-    // Load settings
-    await loadSettings();
-    console.log('[Variable Editor] Settings loaded');
-
-    // Register slash command
-    registerSlashCommand('variableeditor', togglePanel, [], 'show / hide the variable editor panel', true, true);
-    console.log('[Variable Editor] Slash command registered');
 
     // Initial render if shown
     if (extension_settings[extensionName].isShown) {
