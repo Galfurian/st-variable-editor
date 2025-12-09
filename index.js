@@ -144,9 +144,32 @@ function renderPanel() {
   panel.classList.add('openDrawer');
   panel.classList.add('pinnedOpen');
 
+  // Create header with title and close button
+  const header = document.createElement('div');
+  header.classList.add('variable-editor-header');
+  header.style.display = 'flex';
+  header.style.alignItems = 'center';
+  header.style.justifyContent = 'space-between';
+  header.style.marginBottom = '10px';
+
   const title = document.createElement('h3');
   title.textContent = 'Variable Editor';
-  panel.append(title);
+  title.style.margin = '0';
+  header.append(title);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.classList.add('fa-solid');
+  closeBtn.classList.add('fa-circle-xmark');
+  closeBtn.onclick = togglePanel;
+  closeBtn.style.border = 'none';
+  closeBtn.style.background = 'none';
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.style.fontSize = '16px';
+  closeBtn.style.color = 'var(--SmartThemeBodyColor)';
+  closeBtn.style.padding = '5px';
+  header.append(closeBtn);
+
+  panel.append(header);
 
   const dragHandle = document.createElement('div');
   dragHandle.id = 'variable-editor-drag-handle';
@@ -154,12 +177,6 @@ function renderPanel() {
   dragHandle.classList.add('fa-solid');
   dragHandle.classList.add('fa-grip');
   panel.append(dragHandle);
-
-  const closeBtn = document.createElement('button');
-  closeBtn.classList.add('fa-solid');
-  closeBtn.classList.add('fa-circle-xmark');
-  closeBtn.onclick = togglePanel;
-  panel.append(closeBtn);
 
   // Local Variables Section
   const localDiv = document.createElement('div');
