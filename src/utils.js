@@ -1,6 +1,4 @@
 // Utility functions for Variable Editor
-import { extension_settings } from "../../../extensions.js";
-import { saveSettingsDebounced } from "../../../../script.js";
 
 // Extension configuration
 const extensionName = "st-variable-editor";
@@ -39,6 +37,7 @@ export function createVariableRow(key, value, type) {
 
 // Add a new variable
 export async function addVariable(type) {
+  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
   const name = prompt(`Enter ${type} variable name:`);
   if (!name) return;
 
@@ -50,9 +49,9 @@ export async function addVariable(type) {
     if (!chatMetadata.variables) chatMetadata.variables = {};
     chatMetadata.variables[name] = value;
   } else {
-    if (!extension_settings.variables) extension_settings.variables = {};
-    if (!extension_settings.variables.global) extension_settings.variables.global = {};
-    extension_settings.variables.global[name] = value;
+    if (!extensionSettings[extensionName].variables) extensionSettings[extensionName].variables = {};
+    if (!extensionSettings[extensionName].variables.global) extensionSettings[extensionName].variables.global = {};
+    extensionSettings[extensionName].variables.global[name] = value;
   }
 
   saveSettingsDebounced();
@@ -62,6 +61,7 @@ export async function addVariable(type) {
 
 // Delete a variable
 export async function deleteVariable(key, type) {
+  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
   if (!confirm(`Are you sure you want to delete the ${type} variable "${key}"?`)) return;
 
   if (type === 'local') {
@@ -70,8 +70,8 @@ export async function deleteVariable(key, type) {
       delete chatMetadata.variables[key];
     }
   } else {
-    if (extension_settings.variables?.global) {
-      delete extension_settings.variables.global[key];
+    if (extensionSettings[extensionName].variables?.global) {
+      delete extensionSettings[extensionName].variables.global[key];
     }
   }
 
@@ -82,6 +82,7 @@ export async function deleteVariable(key, type) {
 
 // Update variable name
 export async function updateVariableName(oldKey, newKey, type) {
+  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
   if (oldKey === newKey) return;
 
   if (type === 'local') {
@@ -92,7 +93,7 @@ export async function updateVariableName(oldKey, newKey, type) {
       delete vars[oldKey];
     }
   } else {
-    const vars = extension_settings.variables?.global;
+    const vars = extensionSettings[extensionName].variables?.global;
     if (vars && vars[oldKey] !== undefined) {
       vars[newKey] = vars[oldKey];
       delete vars[oldKey];
@@ -106,14 +107,15 @@ export async function updateVariableName(oldKey, newKey, type) {
 
 // Update variable value
 export function updateVariableValue(key, value, type) {
+  const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
   if (type === 'local') {
     const { chatMetadata } = SillyTavern.getContext();
     if (!chatMetadata.variables) chatMetadata.variables = {};
     chatMetadata.variables[key] = value;
   } else {
-    if (!extension_settings.variables) extension_settings.variables = {};
-    if (!extension_settings.variables.global) extension_settings.variables.global = {};
-    extension_settings.variables.global[key] = value;
+    if (!extensionSettings[extensionName].variables) extensionSettings[extensionName].variables = {};
+    if (!extensionSettings[extensionName].variables.global) extensionSettings[extensionName].variables.global = {};
+    extensionSettings[extensionName].variables.global[key] = value;
   }
 
   saveSettingsDebounced();
@@ -121,9 +123,10 @@ export function updateVariableValue(key, value, type) {
 
 // Loads the extension settings if they exist, otherwise initializes them to the defaults.
 export async function loadSettings() {
+  const { extensionSettings } = SillyTavern.getContext();
   //Create the settings if they don't exist
-  extension_settings[extensionName] = extension_settings[extensionName] || {};
-  if (Object.keys(extension_settings[extensionName]).length === 0) {
-    Object.assign(extension_settings[extensionName], defaultSettings);
+  extensionSettings[extensionName] = extensionSettings[extensionName] || {};
+  if (Object.keys(extensionSettings[extensionName]).length === 0) {
+    Object.assign(extensionSettings[extensionName], defaultSettings);
   }
 }

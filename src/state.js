@@ -1,5 +1,4 @@
 // State management and update logic for Variable Editor
-import { extension_settings } from "../../../extensions.js";
 
 // Extension configuration
 const extensionName = "st-variable-editor";
@@ -26,14 +25,15 @@ export function toggleGlobalCollapsed() {
 
 // Continuous update loop like the original Variable Viewer
 export async function startUpdateLoop() {
+  const { extensionSettings } = SillyTavern.getContext();
   if (isUpdating) return;
   isUpdating = true;
 
-  while (extension_settings[extensionName].isShown) {
+  while (extensionSettings[extensionName].isShown) {
     try {
       const { chatMetadata } = SillyTavern.getContext();
       const currentLocalVars = chatMetadata.variables || {};
-      const currentGlobalVars = extension_settings.variables?.global || {};
+      const currentGlobalVars = extensionSettings[extensionName].variables?.global || {};
 
       const localVarsStr = JSON.stringify(currentLocalVars);
       const globalVarsStr = JSON.stringify(currentGlobalVars);

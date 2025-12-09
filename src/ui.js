@@ -1,6 +1,4 @@
 // UI rendering and DOM manipulation for Variable Editor
-import { extension_settings } from "../../../extensions.js";
-import { saveSettingsDebounced } from "../../../../script.js";
 import { isLocalCollapsed, isGlobalCollapsed, toggleLocalCollapsed, toggleGlobalCollapsed } from './state.js';
 import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue } from './utils.js';
 import { startUpdateLoop, stopUpdateLoop, storeInputReferences, updatePreviousVars } from './state.js';
@@ -18,7 +16,7 @@ let globalVarInputs = new Map();
 // Render the variable editor panel
 export function renderPanel() {
   console.log('[Variable Editor] renderPanel called');
-  const { chatMetadata } = SillyTavern.getContext();
+  const { chatMetadata, extensionSettings } = SillyTavern.getContext();
   console.log('[Variable Editor] Got chatMetadata');
 
   // Remove existing panel if it exists
@@ -176,7 +174,7 @@ export function renderPanel() {
   globalContent.style.display = isGlobalCollapsed ? 'none' : 'block';
   globalContentRef = globalContent; // Store reference
 
-  const globalVars = extension_settings.variables?.global || {};
+  const globalVars = extensionSettings[extensionName]?.variables?.global || {};
   for (const key in globalVars) {
     const row = createVariableRow(key, globalVars[key], 'global');
     globalContent.append(row);
