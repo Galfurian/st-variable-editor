@@ -1,5 +1,4 @@
 // UI rendering and DOM manipulation for Variable Editor
-import { isLocalCollapsed, isGlobalCollapsed, toggleLocalCollapsed, toggleGlobalCollapsed } from './state.js';
 import { createVariableRow, addVariable, deleteVariable, updateVariableName, updateVariableValue } from './utils.js';
 import { startUpdateLoop, stopUpdateLoop, storeInputReferences, updatePreviousVars } from './state.js';
 
@@ -70,24 +69,13 @@ export function renderPanel() {
   // Local Variables Section
   const localDiv = document.createElement('div');
   localDiv.classList.add('variable-section');
-  localDiv.classList.add('inline-drawer');
 
   const localHeader = document.createElement('div');
-  localHeader.classList.add('inline-drawer-toggle');
-  localHeader.classList.add('inline-drawer-header');
+  localHeader.classList.add('variable-editor-header');
 
   const localTitle = document.createElement('b');
   localTitle.textContent = 'Local Variables';
   localHeader.append(localTitle);
-
-  const localIcon = document.createElement('div');
-  localIcon.classList.add('inline-drawer-icon');
-  localIcon.classList.add('fa-solid');
-  localIcon.classList.add('fa-circle-chevron-up');
-  if (!isLocalCollapsed) {
-    localIcon.classList.add('down');
-  }
-  localHeader.append(localIcon);
 
   const addLocalBtn = document.createElement('button');
   addLocalBtn.textContent = '+';
@@ -95,25 +83,10 @@ export function renderPanel() {
   addLocalBtn.onclick = () => addVariable('local');
   localHeader.append(addLocalBtn);
 
-  localHeader.onclick = (e) => {
-    if (e.target === addLocalBtn) return; // Don't toggle if clicking add button
-    const content = localContentRef;
-    const icon = localHeader.querySelector('.inline-drawer-icon');
-    toggleLocalCollapsed();
-    if (isLocalCollapsed) {
-      content.style.display = 'none';
-      icon.classList.remove('down');
-    } else {
-      content.style.display = 'block';
-      icon.classList.add('down');
-    }
-  };
-
   localDiv.append(localHeader);
 
   const localContent = document.createElement('div');
-  localContent.classList.add('inline-drawer-content');
-  localContent.style.display = isLocalCollapsed ? 'none' : 'block';
+  localContent.classList.add('variable-content');
   localContentRef = localContent; // Store reference
 
   const localVars = chatMetadata.variables || {};
@@ -128,24 +101,13 @@ export function renderPanel() {
   // Global Variables Section
   const globalDiv = document.createElement('div');
   globalDiv.classList.add('variable-section');
-  globalDiv.classList.add('inline-drawer');
 
   const globalHeader = document.createElement('div');
-  globalHeader.classList.add('inline-drawer-toggle');
-  globalHeader.classList.add('inline-drawer-header');
+  globalHeader.classList.add('variable-editor-header');
 
   const globalTitle = document.createElement('b');
   globalTitle.textContent = 'Global Variables';
   globalHeader.append(globalTitle);
-
-  const globalIcon = document.createElement('div');
-  globalIcon.classList.add('inline-drawer-icon');
-  globalIcon.classList.add('fa-solid');
-  globalIcon.classList.add('fa-circle-chevron-up');
-  if (!isGlobalCollapsed) {
-    globalIcon.classList.add('down');
-  }
-  globalHeader.append(globalIcon);
 
   const addGlobalBtn = document.createElement('button');
   addGlobalBtn.textContent = '+';
@@ -153,28 +115,13 @@ export function renderPanel() {
   addGlobalBtn.onclick = () => addVariable('global');
   globalHeader.append(addGlobalBtn);
 
-  globalHeader.onclick = (e) => {
-    if (e.target === addGlobalBtn) return; // Don't toggle if clicking add button
-    const content = globalContentRef;
-    const icon = globalHeader.querySelector('.inline-drawer-icon');
-    toggleGlobalCollapsed();
-    if (isGlobalCollapsed) {
-      content.style.display = 'none';
-      icon.classList.remove('down');
-    } else {
-      content.style.display = 'block';
-      icon.classList.add('down');
-    }
-  };
-
   globalDiv.append(globalHeader);
 
   const globalContent = document.createElement('div');
-  globalContent.classList.add('inline-drawer-content');
-  globalContent.style.display = isGlobalCollapsed ? 'none' : 'block';
+  globalContent.classList.add('variable-content');
   globalContentRef = globalContent; // Store reference
 
-  const globalVars = extensionSettings[extensionName]?.variables?.global || {};
+  const globalVars = extensionSettings.variables?.global || {};
   for (const key in globalVars) {
     const row = createVariableRow(key, globalVars[key], 'global');
     globalContent.append(row);
@@ -190,7 +137,7 @@ export function renderPanel() {
   storeInputReferences(localVars, globalVars);
 
   // Update previous variable states
-  updatePreviousVars(chatMetadata.variables || {}, extension_settings.variables?.global || {});
+  updatePreviousVars(chatMetadata.variables || {}, extensionSettings.variables?.global || {});
   console.log('[Variable Editor] renderPanel completed');
 
   // Start the continuous update loop
@@ -204,4 +151,51 @@ export function unrenderPanel() {
 
   // Stop the continuous update loop
   stopUpdateLoop();
+}
+
+// Update existing input elements with new variable values
+export function updateExistingInputs(localVars, globalVars) {
+  // Update local variables
+  for (const [key, input] of localVarInputs) {
+    if (localVars[key] !== undefined) {
+      input.value = localVars[key];
+    } else {
+      // Variable removed, remove the input
+      input.closest('.variable-row').remove();
+      localVarInputs.delete(key);
+    }
+  }
+
+  // Add new local variables
+  for (const key in localVars) {
+    if (!localVarInputs.has(key)) {
+      const row = createVariableRow(key, localVars[key], 'local');
+      localContentRef.append(row);
+      // Update the map
+      const input = row.querySelector('.var-value');
+      if (input) localVarInputs.set(key, input);
+    }
+  }
+
+  // Update global variables
+  for (const [key, input] of globalVarInputs) {
+    if (globalVars[key] !== undefined) {
+      input.value = globalVars[key];
+    } else {
+      // Variable removed, remove the input
+      input.closest('.variable-row').remove();
+      globalVarInputs.delete(key);
+    }
+  }
+
+  // Add new global variables
+  for (const key in globalVars) {
+    if (!globalVarInputs.has(key)) {
+      const row = createVariableRow(key, globalVars[key], 'global');
+      globalContentRef.append(row);
+      // Update the map
+      const input = row.querySelector('.var-value');
+      if (input) globalVarInputs.set(key, input);
+    }
+  }
 }

@@ -7,21 +7,8 @@ const extensionName = "st-variable-editor";
 let previousLocalVars = JSON.stringify({});
 let previousGlobalVars = JSON.stringify({});
 
-// Track collapsed/expanded state of sections
-export let isLocalCollapsed = false;
-export let isGlobalCollapsed = false;
-
 // Flag to control the update loop
 let isUpdating = false;
-
-// Toggle functions for collapsed state
-export function toggleLocalCollapsed() {
-  isLocalCollapsed = !isLocalCollapsed;
-}
-
-export function toggleGlobalCollapsed() {
-  isGlobalCollapsed = !isGlobalCollapsed;
-}
 
 // Continuous update loop like the original Variable Viewer
 export async function startUpdateLoop() {
@@ -33,7 +20,7 @@ export async function startUpdateLoop() {
     try {
       const { chatMetadata } = SillyTavern.getContext();
       const currentLocalVars = chatMetadata.variables || {};
-      const currentGlobalVars = extensionSettings[extensionName].variables?.global || {};
+      const currentGlobalVars = extensionSettings.variables?.global || {};
 
       const localVarsStr = JSON.stringify(currentLocalVars);
       const globalVarsStr = JSON.stringify(currentGlobalVars);

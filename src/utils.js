@@ -49,9 +49,9 @@ export async function addVariable(type) {
     if (!chatMetadata.variables) chatMetadata.variables = {};
     chatMetadata.variables[name] = value;
   } else {
-    if (!extensionSettings[extensionName].variables) extensionSettings[extensionName].variables = {};
-    if (!extensionSettings[extensionName].variables.global) extensionSettings[extensionName].variables.global = {};
-    extensionSettings[extensionName].variables.global[name] = value;
+    if (!extensionSettings.variables) extensionSettings.variables = {};
+    if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
+    extensionSettings.variables.global[name] = value;
   }
 
   saveSettingsDebounced();
@@ -70,8 +70,8 @@ export async function deleteVariable(key, type) {
       delete chatMetadata.variables[key];
     }
   } else {
-    if (extensionSettings[extensionName].variables?.global) {
-      delete extensionSettings[extensionName].variables.global[key];
+    if (extensionSettings.variables?.global) {
+      delete extensionSettings.variables.global[key];
     }
   }
 
@@ -93,7 +93,7 @@ export async function updateVariableName(oldKey, newKey, type) {
       delete vars[oldKey];
     }
   } else {
-    const vars = extensionSettings[extensionName].variables?.global;
+    const vars = extensionSettings.variables?.global;
     if (vars && vars[oldKey] !== undefined) {
       vars[newKey] = vars[oldKey];
       delete vars[oldKey];
@@ -113,9 +113,9 @@ export function updateVariableValue(key, value, type) {
     if (!chatMetadata.variables) chatMetadata.variables = {};
     chatMetadata.variables[key] = value;
   } else {
-    if (!extensionSettings[extensionName].variables) extensionSettings[extensionName].variables = {};
-    if (!extensionSettings[extensionName].variables.global) extensionSettings[extensionName].variables.global = {};
-    extensionSettings[extensionName].variables.global[key] = value;
+    if (!extensionSettings.variables) extensionSettings.variables = {};
+    if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
+    extensionSettings.variables.global[key] = value;
   }
 
   saveSettingsDebounced();
