@@ -27,9 +27,59 @@ export function renderPanel() {
   const panel = document.createElement('div');
   panel.id = 'variable-editor-panel';
   panel.classList.add('variable-editor-panel');
-  panel.classList.add('fillRight');
+  // Note: 'fillRight' usually implies full height/fixed width in some ST themes. 
+  // If resizing acts weird, try removing 'fillRight' and relying on your own CSS.
+  panel.classList.add('fillRight'); 
   panel.classList.add('openDrawer');
   panel.classList.add('pinnedOpen');
+
+  // ---------------------------------------------------------
+  // START: RESIZE LOGIC
+  // ---------------------------------------------------------
+  const resizeHandle = document.createElement('div');
+  resizeHandle.classList.add('resize-handle'); // Must match CSS below
+  panel.appendChild(resizeHandle);
+
+  let isResizing = false;
+  let startX, startWidth;
+
+  resizeHandle.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = panel.getBoundingClientRect().width;
+    
+    // Global cursor/select style to prevent text highlighting while dragging
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+    
+    // Attach listeners to document so you don't lose focus if mouse moves fast
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+
+  const onMouseMove = (e) => {
+    if (!isResizing) return;
+    // Calculate distance moved. 
+    // Moving LEFT (negative X) should INCREASE width for a right-side panel.
+    const dx = startX - e.clientX;
+    const newWidth = startWidth + dx;
+
+    // Set min/max limits
+    if (newWidth > 300 && newWidth < window.innerWidth * 0.8) {
+      panel.style.width = `${newWidth}px`;
+    }
+  };
+
+  const onMouseUp = () => {
+    isResizing = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+  // ---------------------------------------------------------
+  // END: RESIZE LOGIC
+  // ---------------------------------------------------------
 
   // Create header with title and close button
   const header = document.createElement('div');
@@ -53,6 +103,7 @@ export function renderPanel() {
     const panel = document.getElementById('variable-editor-panel');
     if (panel) panel.style.display = 'none';
   };
+  // Using a class for these styles is cleaner, but keeping your inline styles for now:
   closeBtn.style.border = 'none';
   closeBtn.style.background = 'none';
   closeBtn.style.cursor = 'pointer';
@@ -63,6 +114,7 @@ export function renderPanel() {
 
   panel.append(header);
 
+  // Existing Drag Handle (Likely for moving the panel, keeping it as requested)
   const dragHandle = document.createElement('div');
   dragHandle.id = 'variable-editor-drag-handle';
   dragHandle.classList.add('drag-grabber');

@@ -53,7 +53,7 @@
   display: flex;
   align-items: center;
   margin: 5px 0;
-  gap: 8px; /* Slightly reduced gap to save space */
+  gap: 8px;
   padding: 5px;
   border-radius: 3px;
   border: 1px solid var(--SmartThemeBorderColor, #dee2e6);
@@ -61,11 +61,8 @@
 
 /* 2. The Name Input (Takes the most space) */
 .var-name {
-  /* Grow to fill available space, shrink if needed */
-  flex: 1 1 auto; 
-  /* Critical: prevents input from forcing the container wide if text is long */
-  min-width: 0; 
-  
+  flex: 1 1 auto;
+  min-width: 0;
   padding: 5px;
   border: 1px solid var(--SmartThemeBorderColor, #ccc);
   border-radius: 3px;
@@ -75,12 +72,7 @@
 
 /* 3. The Value Input (Takes specific space, or less space than name) */
 .var-value {
-  /* Option A: Fixed width (good for numbers/booleans) */
-  /* flex: 0 0 80px; */
-
-  /* Option B: Proportional width (Takes 30% of remaining space relative to name) */
-  flex: 0 0 30%; 
-  
+  flex: 0 0 30%;
   min-width: 0;
   padding: 5px;
   border: 1px solid var(--SmartThemeBorderColor, #ccc);
@@ -91,19 +83,15 @@
 
 /* 4. The Button (Takes ONLY the space of the icon) */
 .variable-row button {
-  /* 0 grow, 0 shrink, auto basis = fit content exactly */
-  flex: 0 0 auto; 
-  
-  width: auto; /* Override any previous width setting */
-  padding: 4px; /* Reduced padding */
+  flex: 0 0 auto;
+  width: auto;
+  padding: 4px;
   font-size: 1.2em;
   border: none;
   background: none;
   color: var(--SmartThemeEmColor, #6c757d);
   cursor: pointer;
   border-radius: 3px;
-  
-  /* Center the icon visually */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,7 +99,7 @@
 
 .variable-row button:hover {
   background: var(--SmartThemeHoverColor, #e9ecef);
-  color: var(--SmartThemeEmColor, #dc3545); /* Optional: Turn red on hover */
+  color: var(--SmartThemeEmColor, #dc3545);
 }
 
 /* Collapsible drawer styles */
@@ -172,4 +160,22 @@
 
 .fa-solid.fa-circle-chevron-up {
   color: var(--SmartThemeEmColor, #6c757d);
+}
+
+/* The Resize Handle */
+.resize-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+  z-index: 1001;
+  touch-action: none;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+  background: rgba(128, 128, 128, 0.2);
+  border-left: 2px solid var(--SmartThemeEmColor, blue);
 }
