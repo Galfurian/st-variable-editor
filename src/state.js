@@ -30,14 +30,13 @@ export async function startUpdateLoop() {
         previousLocalVars = localVarsStr;
         previousGlobalVars = globalVarsStr;
 
-        // Update existing inputs without re-rendering
-        const { updateExistingInputs } = await import('./ui.js');
-        updateExistingInputs(currentLocalVars, currentGlobalVars);
-
-        // Check if structure changed (added/removed variables)
         if (hasStructureChanged(currentLocalVars, currentGlobalVars)) {
           const { renderPanel } = await import('./ui.js');
           renderPanel();
+        } else {
+          // Update existing inputs without re-rendering
+          const { updateExistingInputs } = await import('./ui.js');
+          updateExistingInputs(currentLocalVars, currentGlobalVars);
         }
       }
 
