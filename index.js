@@ -29,7 +29,8 @@ let globalVarInputs = new Map();
 function checkAndUpdateVariables() {
   if (!extension_settings[extensionName].isShown) return;
 
-  const currentLocalVars = chat_metadata.variables || {};
+  const { chatMetadata } = SillyTavern.getContext();
+  const currentLocalVars = chatMetadata.variables || {};
   const currentGlobalVars = extension_settings.variables?.global || {};
 
   const localChanged = JSON.stringify(currentLocalVars) !== previousLocalVars;
@@ -110,6 +111,7 @@ function togglePanel() {
 }
 
 function renderPanel() {
+  console.log('[Variable Editor] renderPanel called');
   // Create the panel
   const panel = document.createElement('div');
   panel.id = 'variable-editor-panel';
@@ -244,6 +246,7 @@ function renderPanel() {
   panel.append(globalDiv);
 
   document.body.append(panel);
+  console.log('[Variable Editor] Panel appended to body');
 
   // Store references to input elements for efficient updates
   storeInputReferences(localVars, globalVars);
@@ -251,6 +254,7 @@ function renderPanel() {
   // Update previous variable states
   previousLocalVars = JSON.stringify(chatMetadata.variables || {});
   previousGlobalVars = JSON.stringify(extension_settings.variables?.global || {});
+  console.log('[Variable Editor] renderPanel completed');
 }
 
 // Store references to input elements for efficient updates
@@ -395,39 +399,56 @@ function unrenderPanel() {
 
 // This function is called when the extension is loaded
 jQuery(async () => {
-  const context = SillyTavern.getContext();
-  const { eventSource, event_types } = context;
+  try {
+    console.log('[Variable Editor] Starting initialization');
+    const context = SillyTavern.getContext();
+    console.log('[Variable Editor] Got context');
+    const { eventSource, event_types } = context;
 
-  // Load settings
-  loadSettings();
+    // Load settings
+    loadSettings();
+    console.log('[Variable Editor] Settings loaded');
 
-  // Register slash command
-  registerSlashCommand('variableeditor', togglePanel, [], 'show / hide the variable editor panel', true, true);
+    // Register slash command
+    registerSlashCommand('variableeditor', togglePanel, [], 'show / hide the variable editor panel', true, true);
+    console.log('[Variable Editor] Slash command registered');
 
-  // Initial render if shown
-  if (extension_settings[extensionName].isShown) {
-    renderPanel();
-  }
-
-  // Add event listeners for dynamic updates
-  eventSource.on(event_types.CHAT_CHANGED, () => {
-    // Reset previous vars when chat changes
-    previousLocalVars = JSON.stringify({});
-    previousGlobalVars = JSON.stringify({});
+    // Initial render if shown
     if (extension_settings[extensionName].isShown) {
+      console.log('[Variable Editor] Initial render - isShown is true');
       renderPanel();
+    } else {
+      console.log('[Variable Editor] Initial render - isShown is false');
     }
-  });
 
-  eventSource.on(event_types.MESSAGE_RECEIVED, () => {
-    checkAndUpdateVariables();
-  });
+    // Add event listeners for dynamic updates
+    eventSource.on(event_types.CHAT_CHANGED, () => {
+      console.log('[Variable Editor] Chat changed event');
+      // Reset previous vars when chat changes
+      previousLocalVars = JSON.stringify({});
+      previousGlobalVars = JSON.stringify({});
+      if (extension_settings[extensionName].isShown) {
+        renderPanel();
+      }
+    });
 
-  eventSource.on(event_types.MESSAGE_SENT, () => {
-    checkAndUpdateVariables();
-  });
+    eventSource.on(event_types.MESSAGE_RECEIVED, () => {
+      console.log('[Variable Editor] Message received event');
+      checkAndUpdateVariables();
+    });
 
-  eventSource.on(event_types.GENERATION_ENDED, () => {
-    checkAndUpdateVariables();
-  });
+    eventSource.on(event_types.MESSAGE_SENT, () => {
+      console.log('[Variable Editor] Message sent event');
+      checkAndUpdateVariables();
+    });
+
+    eventSource.on(event_types.GENERATION_ENDED, () => {
+      console.log('[Variable Editor] Generation ended event');
+      checkAndUpdateVariables();
+    });
+
+    console.log('[Variable Editor] Initialization completed');
+  } catch (error) {
+    console.error('[Variable Editor] Error during initialization:', error);
+  }
 });
