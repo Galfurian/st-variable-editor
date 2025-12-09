@@ -74,19 +74,19 @@ function stopUpdateLoop() {
 
 // Update existing input values without re-rendering the DOM
 function updateExistingInputs(currentLocalVars, currentGlobalVars) {
-  // Update local variable inputs
+  // Update local variable value inputs
   for (const [key, value] of Object.entries(currentLocalVars)) {
-    const input = localVarInputs.get(key);
-    if (input && input.value !== String(value)) {
-      input.value = value;
+    const valueInput = document.querySelector(`input.var-value[data-var-key="${key}"][data-var-type="local"]`);
+    if (valueInput && valueInput.value !== String(value)) {
+      valueInput.value = String(value);
     }
   }
 
-  // Update global variable inputs
+  // Update global variable value inputs
   for (const [key, value] of Object.entries(currentGlobalVars)) {
-    const input = globalVarInputs.get(key);
-    if (input && input.value !== String(value)) {
-      input.value = value;
+    const valueInput = document.querySelector(`input.var-value[data-var-key="${key}"][data-var-type="global"]`);
+    if (valueInput && valueInput.value !== String(value)) {
+      valueInput.value = String(value);
     }
   }
 }
