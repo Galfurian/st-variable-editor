@@ -72,12 +72,12 @@ export function createAddRow(type) {
 
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
-  nameInput.placeholder = 'New variable name';
+  nameInput.placeholder = 'Variable name';
   nameInput.classList.add('var-name');
 
   const valueInput = document.createElement('input');
   valueInput.type = 'text';
-  valueInput.placeholder = 'New variable value';
+  valueInput.placeholder = 'Variable value';
   valueInput.classList.add('var-value');
 
   const addBtn = document.createElement('button');
@@ -89,7 +89,9 @@ export function createAddRow(type) {
   addBtn.onclick = () => {
     const name = nameInput.value.trim();
     const value = valueInput.value.trim();
-    addVariable(type, name || null, value !== '' ? value : null);
+    addVariable(type, name, value);
+    nameInput.value = '';
+    valueInput.value = '';
   };
 
   row.append(nameInput);
@@ -100,21 +102,18 @@ export function createAddRow(type) {
 }
 
 // Add a new variable
-export async function addVariable(type, providedName = null, providedValue = null) {
+export async function addVariable(type, providedName, providedValue) {
   const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
-  const name = providedName || prompt(`Enter ${type} variable name:`);
-  if (!name) return;
 
-  const value = providedValue !== null ? providedValue : prompt(`Enter ${type} variable value:`);
-  if (value === null || value === undefined) return;
+  if (!providedName || !providedValue) return;
 
   if (type === 'local') {
     if (!chat_metadata.variables) chat_metadata.variables = {};
-    chat_metadata.variables[name] = value;
+    chat_metadata.variables[providedName] = providedValue;
   } else {
     if (!extensionSettings.variables) extensionSettings.variables = {};
     if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
-    extensionSettings.variables.global[name] = value;
+    extensionSettings.variables.global[providedName] = providedValue;
   }
 
   saveSettingsDebounced();
