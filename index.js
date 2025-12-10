@@ -8,6 +8,7 @@ import { registerSlashCommand } from '../../../slash-commands.js';
 
 // Import our modules
 import { renderPanel } from './src/ui.js';
+import { stopUpdateLoop } from './src/state.js';
 
 // Debug prefix for console messages
 const CONSOLE_PREFIX = '[Variable Editor] ';
@@ -54,6 +55,9 @@ jQuery(async () => {
 
     // Add event listeners for dynamic updates
     eventSource.on(event_types.CHAT_CHANGED, () => {
+      // Stop the current update loop to prevent interference
+      stopUpdateLoop();
+      
       // Re-render the panel when chat changes
       renderPanel();
       const panel = document.getElementById('variable-editor-panel');
