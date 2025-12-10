@@ -7,5 +7,6 @@
     "css": "style.css",
     "author": "Galfurian",
     "version": "1.0.0",
-    "homePage": "https://github.com/Galfurian/st-variable-editor"
+    "homePage": "https://github.com/Galfurian/st-variable-editor",
+    "auto_update": true
 }
