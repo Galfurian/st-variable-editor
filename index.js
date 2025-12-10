@@ -35,9 +35,11 @@ registerSlashCommand('variableeditor', () => {
   extension_settings[EXTENSION_NAME].isShown = !extension_settings[EXTENSION_NAME].isShown;
   if (extension_settings[EXTENSION_NAME].isShown) {
     renderPanel();
+    return 'Variable editor panel shown.';
   } else {
     const panel = document.getElementById(PANEL_ID);
     if (panel) panel.style.display = 'none';
+    return 'Variable editor panel hidden.';
   }
   saveSettingsDebounced();
 }, [], 'show / hide the variable editor panel', true, true);
