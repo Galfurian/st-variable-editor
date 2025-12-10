@@ -24,7 +24,9 @@ if (!extension_settings[EXTENSION_NAME]) {
   extension_settings[EXTENSION_NAME] = { ...defaultSettings };
 }
 
-// Register slash command immediately (like temp_viewer does)
+/**
+ * Register slash command immediately (like temp_viewer does).
+ */
 registerSlashCommand('variableeditor', () => {
   extension_settings[EXTENSION_NAME].isShown = !extension_settings[EXTENSION_NAME].isShown;
   if (extension_settings[EXTENSION_NAME].isShown) {

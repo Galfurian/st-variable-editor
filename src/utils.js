@@ -1,50 +1,71 @@
-// Utility functions for Variable Editor
+/**
+ * Utility functions and classes for managing variables in SillyTavern.
+ */
 
 // Extension configuration
-const EXTENSION_NAME = "st-variable-editor";
+const EXTENSION_NAME = 'st-variable-editor';
 
 // Debug prefix for console messages
 const CONSOLE_PREFIX = '[Variable Editor] ';
 
-// Variable types constants
+/**
+ * Variable types constants.
+ */
 const VARIABLE_TYPES = {
   LOCAL: 'local',
   GLOBAL: 'global'
 };
 
-// Variable store class to abstract local/global variable handling
+/**
+ * Variable store class to abstract local/global variable handling.
+ */
 class VariableStore {
   constructor(type) {
     this.type = type;
   }
 
-  /** Gets all variables for this store type */
+  /**
+   * Gets all variables for this store type.
+   * @returns {Object} The variables object.
+   */
   getAll() {
     if (this.type === VARIABLE_TYPES.LOCAL) {
-      const { chatMetadata } = SillyTavern.getContext();
+      const {chatMetadata} = SillyTavern.getContext();
       if (!chatMetadata.variables) chatMetadata.variables = {};
       return chatMetadata.variables;
     } else {
-      const { extensionSettings } = SillyTavern.getContext();
+      const {extensionSettings} = SillyTavern.getContext();
       if (!extensionSettings.variables) extensionSettings.variables = {};
-      if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
+      if (!extensionSettings.variables.global)
+        extensionSettings.variables.global = {};
       return extensionSettings.variables.global;
     }
   }
 
-  /** Sets a variable in this store */
+  /**
+   * Sets a variable in this store.
+   * @param {*} key the variable name.
+   * @param {*} value the variable value.
+   */
   set(key, value) {
     const vars = this.getAll();
     vars[key] = value;
   }
 
-  /** Deletes a variable from this store */
+  /**
+   * Deletes a variable from this store.
+   * @param {*} key the variable name.
+   */
   delete(key) {
     const vars = this.getAll();
     delete vars[key];
   }
 
-  /** Renames a variable in this store */
+  /**
+   * Renames a variable in this store.
+   * @param {*} oldKey the current variable name.
+   * @param {*} newKey the new variable name.
+   */
   rename(oldKey, newKey) {
     const vars = this.getAll();
     if (vars[oldKey] !== undefined) {
@@ -54,8 +75,16 @@ class VariableStore {
   }
 }
 
-// Variable item class for better management.
+/**
+ * Variable item class for better management.
+ */
 class VariableItem {
+  /**
+   * Creates a VariableItem instance.
+   * @param {*} key the variable name.
+   * @param {*} value the variable value.
+   * @param {*} type the variable type (local/global).
+   */
   constructor(key, value, type) {
     this.key = key;
     this.value = value;
@@ -65,7 +94,10 @@ class VariableItem {
     this.valueInput = null;
   }
 
-  /** Renders the variable item as a DOM element */
+  /**
+   * Renders the variable item as a DOM element.
+   * @returns {HTMLElement} The row element.
+   */
   render() {
     if (this.row) return this.row;
 
@@ -81,7 +113,10 @@ class VariableItem {
     return this.row;
   }
 
-  /** Creates the name input element */
+  /**
+   * Creates the name input element.
+   * @returns {HTMLElement} The name input element.
+   */
   createNameInput() {
     const input = document.createElement('input');
     input.type = 'text';
@@ -93,7 +128,10 @@ class VariableItem {
     return input;
   }
 
-  /** Creates the value input element */
+  /**
+   * Creates the value input element.
+   * @returns {HTMLElement} The value input element.
+   */
   createValueInput() {
     const input = document.createElement('input');
     input.type = 'text';
@@ -101,11 +139,15 @@ class VariableItem {
     input.classList.add('var-value');
     input.setAttribute('data-var-key', this.key);
     input.setAttribute('data-var-type', this.type);
-    input.onchange = () => updateVariableValue(this.nameInput.value, input.value, this.type);
+    input.onchange = () =>
+        updateVariableValue(this.nameInput.value, input.value, this.type);
     return input;
   }
 
-  /** Creates the delete button with confirmation logic */
+  /**
+   * Creates the delete button with confirmation logic.
+   * @returns {HTMLElement} The delete button element.
+   */
   createDeleteButton() {
     const button = document.createElement('button');
     button.classList.add('fa-solid', 'fa-circle-xmark');
@@ -121,7 +163,10 @@ class VariableItem {
     return button;
   }
 
-  /** Updates the value input with new value */
+  /**
+   * Updates the value input with new value.
+   * @param {*} newValue the new variable value.
+   */
   update(newValue) {
     if (this.valueInput) {
       this.valueInput.value = newValue;
@@ -129,7 +174,9 @@ class VariableItem {
     this.value = newValue;
   }
 
-  /** Removes the row from DOM */
+  /**
+   * Removes the row from DOM.
+   */
   remove() {
     if (this.row) {
       this.row.remove();
@@ -137,10 +184,13 @@ class VariableItem {
   }
 }
 
-export { VariableItem, VARIABLE_TYPES };
+export {VariableItem, VARIABLE_TYPES};
 
-// Create an add row element
-/** Creates a row for adding new variables */
+/**
+ * Creates a row for adding new variables.
+ * @param {*} type the variable type (local/global).
+ * @returns {HTMLElement} The add row element.
+ */
 export function createAddRow(type) {
   const row = document.createElement('div');
   row.classList.add('variable-row');
@@ -178,10 +228,16 @@ export function createAddRow(type) {
   return row;
 }
 
-/** Adds a new variable to the specified scope */
+/**
+ * Adds a new variable to the specified scope
+ * @param {*} type the variable type (local/global).
+ * @param {*} providedName the variable name.
+ * @param {*} providedValue the variable value.
+ * @returns {boolean} True if added successfully, false otherwise.
+ */
 export async function addVariable(type, providedName, providedValue) {
   try {
-    const { saveSettingsDebounced, saveMetadata } = SillyTavern.getContext();
+    const {saveSettingsDebounced, saveMetadata} = SillyTavern.getContext();
     const store = new VariableStore(type);
 
     if (!providedName) {
@@ -201,7 +257,7 @@ export async function addVariable(type, providedName, providedValue) {
       saveSettingsDebounced();
     }
     toastr.success('Variable added successfully!');
-    const { renderPanel } = await import('./ui.js');
+    const {renderPanel} = await import('./ui.js');
     await renderPanel();
     return true;
   } catch (error) {
@@ -211,10 +267,14 @@ export async function addVariable(type, providedName, providedValue) {
   }
 }
 
-/** Deletes a variable from the specified scope */
+/**
+ * Deletes a variable from the specified scope.
+ * @param {*} key the variable name.
+ * @param {*} type the variable type (local/global).
+ */
 export async function deleteVariable(key, type) {
   try {
-    const { saveSettingsDebounced, saveMetadata } = SillyTavern.getContext();
+    const {saveSettingsDebounced, saveMetadata} = SillyTavern.getContext();
     const store = new VariableStore(type);
 
     store.delete(key);
@@ -225,7 +285,7 @@ export async function deleteVariable(key, type) {
       saveSettingsDebounced();
     }
     toastr.success('Variable deleted successfully!');
-    const { renderPanel } = await import('./ui.js');
+    const {renderPanel} = await import('./ui.js');
     await renderPanel();
   } catch (error) {
     console.error(CONSOLE_PREFIX, 'Error deleting variable:', error);
@@ -233,10 +293,16 @@ export async function deleteVariable(key, type) {
   }
 }
 
-/** Updates the name of an existing variable */
+/**
+ * Updates the name of an existing variable.
+ * @param {*} oldKey the current variable name.
+ * @param {*} newKey the new variable name.
+ * @param {*} type the variable type (local/global).
+ * @returns {boolean} True if updated successfully, false otherwise.
+ */
 export async function updateVariableName(oldKey, newKey, type) {
   try {
-    const { saveSettingsDebounced, saveMetadata } = SillyTavern.getContext();
+    const {saveSettingsDebounced, saveMetadata} = SillyTavern.getContext();
     if (oldKey === newKey) return;
 
     const store = new VariableStore(type);
@@ -247,7 +313,7 @@ export async function updateVariableName(oldKey, newKey, type) {
     } else {
       saveSettingsDebounced();
     }
-    const { renderPanel } = await import('./ui.js');
+    const {renderPanel} = await import('./ui.js');
     await renderPanel();
   } catch (error) {
     console.error(CONSOLE_PREFIX, 'Error updating variable name:', error);
@@ -255,10 +321,15 @@ export async function updateVariableName(oldKey, newKey, type) {
   }
 }
 
-/** Updates the value of an existing variable */
+/**
+ * Updates the value of an existing variable.
+ * @param {string} key - The variable name.
+ * @param {string} value - The new variable value.
+ * @param {string} type - The variable type (local/global).
+ */
 export async function updateVariableValue(key, value, type) {
   try {
-    const { saveSettingsDebounced, saveMetadata } = SillyTavern.getContext();
+    const {saveSettingsDebounced, saveMetadata} = SillyTavern.getContext();
     const store = new VariableStore(type);
 
     store.set(key, value);
@@ -268,7 +339,7 @@ export async function updateVariableValue(key, value, type) {
     } else {
       saveSettingsDebounced();
     }
-    const { renderPanel } = await import('./ui.js');
+    const {renderPanel} = await import('./ui.js');
     await renderPanel();
   } catch (error) {
     console.error(CONSOLE_PREFIX, 'Error updating variable value:', error);

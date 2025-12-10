@@ -1,3 +1,8 @@
+/**
+ * @fileoverview State management and update logic for the Variable Editor extension
+ * Handles real-time synchronization and change detection for variable displays
+ */
+
 // State management and update logic for Variable Editor
 import { VARIABLE_TYPES } from './utils.js';
 

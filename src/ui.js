@@ -1,9 +1,15 @@
+/**
+ * @fileoverview UI rendering and DOM manipulation for the Variable Editor
+ * extension Handles panel creation, user interactions, and dynamic updates of
+ * variable displays
+ */
+
 // UI rendering and DOM manipulation for Variable Editor
-import { VariableItem, createAddRow, VARIABLE_TYPES } from './utils.js';
-import { startUpdateLoop, stopUpdateLoop, updatePreviousVars } from './state.js';
+import {startUpdateLoop, stopUpdateLoop, updatePreviousVars} from './state.js';
+import {createAddRow, VARIABLE_TYPES, VariableItem} from './utils.js';
 
 // Extension configuration
-const EXTENSION_NAME = "st-variable-editor";
+const EXTENSION_NAME = 'st-variable-editor';
 
 // Debug prefix for console messages
 const CONSOLE_PREFIX = '[Variable Editor] ';
@@ -15,9 +21,12 @@ let localContentRef, globalContentRef;
 let localItems = [];
 let globalItems = [];
 
-/** Renders the main variable editor panel with local and global variable sections */
+/**
+ * Renders the main variable editor panel with local and global variable
+ * sections
+ */
 export function renderPanel() {
-  const { extensionSettings } = SillyTavern.getContext();
+  const {extensionSettings} = SillyTavern.getContext();
   if (!extensionSettings[EXTENSION_NAME].isShown) return;
 
   // Remove existing panel if it exists
@@ -34,8 +43,9 @@ export function renderPanel() {
   document.body.appendChild(panel);
 
   // Update previous variable states
-  const { chatMetadata } = SillyTavern.getContext();
-  updatePreviousVars(chatMetadata.variables || {}, extensionSettings.variables?.global || {});
+  const {chatMetadata} = SillyTavern.getContext();
+  updatePreviousVars(
+      chatMetadata.variables || {}, extensionSettings.variables?.global || {});
 
   // Start the continuous update loop
   startUpdateLoop();
@@ -43,15 +53,22 @@ export function renderPanel() {
 
 // Helper functions for panel creation
 
-/** Creates the main panel container */
+/**
+ * Creates the main panel container.
+ * @returns {HTMLElement} The panel element.
+ */
 function createPanel() {
   const panel = document.createElement('div');
   panel.id = 'variable-editor-panel';
-  panel.classList.add('variable-editor-panel', 'fillRight', 'openDrawer', 'pinnedOpen');
+  panel.classList.add(
+      'variable-editor-panel', 'fillRight', 'openDrawer', 'pinnedOpen');
   return panel;
 }
 
-/** Sets up the resize functionality for the panel */
+/**
+ * Sets up the resize functionality for the panel
+ * @param {HTMLElement} panel the panel element.
+ */
 function setupResize(panel) {
   const resizeHandle = document.createElement('div');
   resizeHandle.classList.add('resize-handle');
@@ -70,6 +87,7 @@ function setupResize(panel) {
     document.addEventListener('mouseup', onMouseUp);
   });
 
+  /** Handles mouse movement during panel resizing */
   const onMouseMove = (e) => {
     if (!isResizing) return;
     const dx = startX - e.clientX;
@@ -79,6 +97,7 @@ function setupResize(panel) {
     }
   };
 
+  /** Handles mouse up event to stop resizing */
   const onMouseUp = () => {
     isResizing = false;
     document.body.style.cursor = '';
@@ -88,7 +107,10 @@ function setupResize(panel) {
   };
 }
 
-/** Creates the header with title and close button */
+/**
+ * Creates the header with title and close button
+ * @returns {HTMLElement} The header element
+ */
 function createHeader() {
   const header = document.createElement('div');
   header.classList.add('variable-editor-header');
@@ -104,8 +126,9 @@ function createHeader() {
 
   const closeBtn = document.createElement('button');
   closeBtn.classList.add('fa-solid', 'fa-circle-xmark');
+  // Handle close button click to hide the panel
   closeBtn.onclick = () => {
-    const { extensionSettings } = SillyTavern.getContext();
+    const {extensionSettings} = SillyTavern.getContext();
     extensionSettings[EXTENSION_NAME].isShown = false;
     const panel = document.getElementById('variable-editor-panel');
     if (panel) panel.style.display = 'none';
@@ -121,7 +144,10 @@ function createHeader() {
   return header;
 }
 
-/** Creates the drag handle for moving the panel */
+/**
+ * Creates the drag handle for moving the panel
+ * @returns {HTMLElement} The drag handle element
+ */
 function createDragHandle() {
   const dragHandle = document.createElement('div');
   dragHandle.id = 'variable-editor-drag-handle';
@@ -129,9 +155,14 @@ function createDragHandle() {
   return dragHandle;
 }
 
-/** Creates a variable section (local or global) with items and add row */
+/**
+ * Creates a variable section (local or global) with items and add row
+ * @param {string} title - The section title
+ * @param {boolean} isLocal - Whether this is the local variables section
+ * @returns {HTMLElement} The section element
+ */
 function createVariableSection(title, isLocal) {
-  const { extensionSettings } = SillyTavern.getContext();
+  const {extensionSettings} = SillyTavern.getContext();
 
   const div = document.createElement('div');
   div.classList.add('variable-section');
@@ -151,7 +182,7 @@ function createVariableSection(title, isLocal) {
   if (isLocal) {
     localContentRef = content;
     localItems = [];
-    const { chatMetadata } = SillyTavern.getContext();
+    const {chatMetadata} = SillyTavern.getContext();
     const vars = chatMetadata.variables || {};
     for (const key in vars) {
       const item = new VariableItem(key, vars[key], VARIABLE_TYPES.LOCAL);
@@ -185,7 +216,8 @@ export function unrenderPanel() {
 }
 
 /**
- * Updates the UI to reflect changes in variable values without full re-rendering
+ * Updates the UI to reflect changes in variable values without full
+ * re-rendering
  * @param {Object} localVars - Current local variables object
  * @param {Object} globalVars - Current global variables object
  */
@@ -201,7 +233,8 @@ export function updateExistingInputs(localVars, globalVars) {
       // Add blink effect
       if (item.valueInput) {
         item.valueInput.classList.add('value-updated');
-        setTimeout(() => item.valueInput.classList.remove('value-updated'), 600);
+        setTimeout(
+            () => item.valueInput.classList.remove('value-updated'), 600);
       }
     }
     return true;
@@ -227,7 +260,8 @@ export function updateExistingInputs(localVars, globalVars) {
       // Add blink effect
       if (item.valueInput) {
         item.valueInput.classList.add('value-updated');
-        setTimeout(() => item.valueInput.classList.remove('value-updated'), 600);
+        setTimeout(
+            () => item.valueInput.classList.remove('value-updated'), 600);
       }
     }
     return true;
@@ -236,7 +270,8 @@ export function updateExistingInputs(localVars, globalVars) {
   // Add new global variables
   for (const key in globalVars) {
     if (!globalItems.find(item => item.key === key)) {
-      const item = new VariableItem(key, globalVars[key], VARIABLE_TYPES.GLOBAL);
+      const item =
+          new VariableItem(key, globalVars[key], VARIABLE_TYPES.GLOBAL);
       globalItems.push(item);
       globalContentRef.insertBefore(item.render(), globalContentRef.lastChild);
     }
