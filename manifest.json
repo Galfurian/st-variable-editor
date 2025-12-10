@@ -8,5 +8,6 @@
     "author": "Galfurian",
     "version": "1.0.0",
     "homePage": "https://github.com/Galfurian/st-variable-editor",
-    "auto_update": true
+    "auto_update": true,
+    "minimum_client_version": "1.10.0"
 }
