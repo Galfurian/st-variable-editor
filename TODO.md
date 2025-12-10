@@ -55,7 +55,7 @@
 ## Security Considerations
 
 - [ ] Validate variable names against a whitelist pattern
-- [ ] Sanitize all user inputs before storage
+- [X] Sanitize all user inputs before storage
 - [ ] Consider Content Security Policy compliance if adding dynamic content
 
 ## Manifest & Extension Standards
