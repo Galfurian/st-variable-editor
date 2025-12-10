@@ -220,8 +220,7 @@ function createVariableSection(title, isLocal) {
     } else {
       globalSortPreference = sortValue;
     }
-    sortVariables(
-        isLocal ? localItems : globalItems, sortValue, content, isLocal);
+    sortVariables(isLocal ? localItems : globalItems, sortValue, content);
   };
 
   sectionHeader.append(sortSelect);
@@ -240,9 +239,9 @@ function createVariableSection(title, isLocal) {
       const item = new VariableItem(key, vars[key], VARIABLE_TYPES.LOCAL);
       localItems.push(item);
     }
-    // Sort items initially
-    sortVariables(localItems, localSortPreference, content, true);
     content.append(createAddRow(VARIABLE_TYPES.LOCAL));
+    // Sort items initially
+    sortVariables(localItems, localSortPreference, content);
   } else {
     globalContentRef = content;
     globalItems = [];
@@ -251,9 +250,9 @@ function createVariableSection(title, isLocal) {
       const item = new VariableItem(key, vars[key], VARIABLE_TYPES.GLOBAL);
       globalItems.push(item);
     }
-    // Sort items initially
-    sortVariables(globalItems, globalSortPreference, content, false);
     content.append(createAddRow(VARIABLE_TYPES.GLOBAL));
+    // Sort items initially
+    sortVariables(globalItems, globalSortPreference, content);
   }
 
   div.append(content);
@@ -339,10 +338,10 @@ export function updateExistingInputs(localVars, globalVars) {
 
   // Re-sort items to maintain current sort order
   if (localContentRef) {
-    sortVariables(localItems, localSortPreference, localContentRef, true);
+    sortVariables(localItems, localSortPreference, localContentRef);
   }
   if (globalContentRef) {
-    sortVariables(globalItems, globalSortPreference, globalContentRef, false);
+    sortVariables(globalItems, globalSortPreference, globalContentRef);
   }
 }
 
@@ -354,7 +353,7 @@ export function updateExistingInputs(localVars, globalVars) {
  * @param {HTMLElement} content - The content container element
  * @param {boolean} isLocal - Whether this is for local variables
  */
-function sortVariables(items, sortType, content, isLocal) {
+function sortVariables(items, sortType, content) {
   // Sort the items array
   items.sort((a, b) => {
     switch (sortType) {
