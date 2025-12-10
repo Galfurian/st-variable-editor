@@ -22,10 +22,13 @@ class VariableStore {
   /** Gets all variables for this store type */
   getAll() {
     if (this.type === VARIABLE_TYPES.LOCAL) {
-      return chat_metadata.variables || {};
+      if (!chat_metadata.variables) chat_metadata.variables = {};
+      return chat_metadata.variables;
     } else {
       const { extensionSettings } = SillyTavern.getContext();
-      return extensionSettings.variables?.global || {};
+      if (!extensionSettings.variables) extensionSettings.variables = {};
+      if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
+      return extensionSettings.variables.global;
     }
   }
 
@@ -33,13 +36,6 @@ class VariableStore {
   set(key, value) {
     const vars = this.getAll();
     vars[key] = value;
-
-    // Ensure global structure exists
-    if (this.type === VARIABLE_TYPES.GLOBAL) {
-      const { extensionSettings } = SillyTavern.getContext();
-      if (!extensionSettings.variables) extensionSettings.variables = {};
-      if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
-    }
   }
 
   /** Deletes a variable from this store */
