@@ -286,7 +286,11 @@ export async function addVariable(type, providedName, providedValue) {
       return false;
     }
 
-    store.set(providedName, providedValue);
+    // Sanitize the variable value to prevent XSS
+    const { DOMPurify } = SillyTavern.libs;
+    const sanitizedValue = DOMPurify.sanitize(providedValue);
+
+    store.set(providedName, sanitizedValue);
 
     if (type === VARIABLE_TYPES.LOCAL) {
       await saveMetadata();
@@ -395,7 +399,11 @@ export async function updateVariableValue(key, value, type) {
       return false;
     }
 
-    store.set(key, value);
+    // Sanitize the variable value to prevent XSS
+    const { DOMPurify } = SillyTavern.libs;
+    const sanitizedValue = DOMPurify.sanitize(value);
+
+    store.set(key, sanitizedValue);
 
     if (type === VARIABLE_TYPES.LOCAL) {
       await saveMetadata();
