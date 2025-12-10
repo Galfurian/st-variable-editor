@@ -71,6 +71,9 @@ jQuery(async () => {
       // Stop the current update loop to prevent interference
       stopUpdateLoop();
       
+      // Remove the existing panel to prevent showing old variables
+      document.getElementById(PANEL_ID)?.remove();
+      
       // Re-render the panel when chat changes
       renderPanel();
       const panel = document.getElementById(PANEL_ID);
