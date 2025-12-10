@@ -1,6 +1,6 @@
 # Changelog
 
-## [v1.0.0] - 2025-12-10
+## v1.0.0 - 2025-12-10
 
 - (b87fd69) refactor: remove informational console.log messages, keep only error logging
 - (8e3b825) refactor: rename DEBUG_PREFIX to CONSOLE_PREFIX for better semantic naming
