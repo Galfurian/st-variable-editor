@@ -205,6 +205,20 @@ export function createAddRow(type) {
   valueInput.placeholder = 'Variable value';
   valueInput.classList.add('var-value');
 
+  // Add Enter key support for adding variable
+  valueInput.addEventListener('keydown', async (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const name = nameInput.value.trim();
+      const value = valueInput.value.trim();
+      const added = await addVariable(type, name, value);
+      if (added) {
+        nameInput.value = '';
+        valueInput.value = '';
+      }
+    }
+  });
+
   const addBtn = document.createElement('button');
   addBtn.classList.add('menu_button', 'menu_button_icon');
   addBtn.title = 'Add variable';
