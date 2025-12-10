@@ -287,6 +287,7 @@ export async function addVariable(type, providedName, providedValue) {
     }
 
     // Sanitize the variable value to prevent XSS
+    // CSP Compliance: All user inputs are sanitized before storage/display
     const { DOMPurify } = SillyTavern.libs;
     const sanitizedValue = DOMPurify.sanitize(providedValue);
 
@@ -400,6 +401,7 @@ export async function updateVariableValue(key, value, type) {
     }
 
     // Sanitize the variable value to prevent XSS
+    // CSP Compliance: All user inputs are sanitized before storage/display
     const { DOMPurify } = SillyTavern.libs;
     const sanitizedValue = DOMPurify.sanitize(value);
 
