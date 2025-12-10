@@ -13,7 +13,7 @@ import { renderPanel } from './src/ui.js';
 const CONSOLE_PREFIX = '[Variable Editor] ';
 
 // Extension configuration
-const EXTENSION_NAME = "st-variable-editor";
+const EXTENSION_NAME = 'st-variable-editor';
 const defaultSettings = {
     isShown: false,
     fontSize: 1.0

@@ -7,7 +7,7 @@
 import { VARIABLE_TYPES } from './utils.js';
 
 // Extension configuration
-const EXTENSION_NAME = "st-variable-editor";
+const EXTENSION_NAME = 'st-variable-editor';
 
 // Debug prefix for console messages
 const CONSOLE_PREFIX = '[Variable Editor] ';
