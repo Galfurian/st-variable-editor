@@ -14,7 +14,10 @@ let previousGlobalVars = JSON.stringify({});
 // Flag to control the update loop
 let isUpdating = false;
 
-// Continuous update loop like the original Variable Viewer
+/**
+ * Starts a continuous polling loop to detect and update variable changes
+ * Runs every 100ms while the panel is visible
+ */
 export async function startUpdateLoop() {
   const { extensionSettings } = SillyTavern.getContext();
   if (isUpdating) return;
@@ -55,12 +58,19 @@ export async function startUpdateLoop() {
   isUpdating = false;
 }
 
-// Stop the update loop
+/**
+ * Stops the continuous update loop
+ */
 export function stopUpdateLoop() {
   isUpdating = false;
 }
 
-// Check if the variable structure changed (added/removed variables)
+/**
+ * Determines if the variable structure has changed (keys added/removed)
+ * @param {Object} currentLocalVars - Current local variables
+ * @param {Object} currentGlobalVars - Current global variables
+ * @returns {boolean} True if structure changed, requiring full re-render
+ */
 function hasStructureChanged(currentLocalVars, currentGlobalVars) {
   const currentLocalKeys = new Set(Object.keys(currentLocalVars));
   const currentGlobalKeys = new Set(Object.keys(currentGlobalVars));
@@ -80,7 +90,11 @@ function hasStructureChanged(currentLocalVars, currentGlobalVars) {
   return localKeysChanged || globalKeysChanged;
 }
 
-// Store references to input elements for efficient updates
+/**
+ * Caches DOM references to variable input elements for performance optimization
+ * @param {Object} localVars - Local variables object
+ * @param {Object} globalVars - Global variables object
+ */
 export function storeInputReferences(localVars, globalVars) {
   // Clear existing references
   localVarInputs.clear();
@@ -103,7 +117,11 @@ export function storeInputReferences(localVars, globalVars) {
   }
 }
 
-// Update previous variable states
+/**
+ * Updates the cached previous state of variables for change detection
+ * @param {Object} localVars - Local variables object
+ * @param {Object} globalVars - Global variables object
+ */
 export function updatePreviousVars(localVars, globalVars) {
   previousLocalVars = JSON.stringify(localVars);
   previousGlobalVars = JSON.stringify(globalVars);

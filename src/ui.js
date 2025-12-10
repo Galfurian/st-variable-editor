@@ -15,7 +15,7 @@ let localContentRef, globalContentRef;
 let localItems = [];
 let globalItems = [];
 
-// Render the variable editor panel
+/** Renders the main variable editor panel with local and global variable sections */
 export function renderPanel() {
   const { extensionSettings } = SillyTavern.getContext();
   if (!extensionSettings[EXTENSION_NAME].isShown) return;
@@ -175,7 +175,7 @@ function createVariableSection(title, isLocal) {
   return div;
 }
 
-// Remove the panel from DOM
+/** Removes the variable editor panel from the DOM and stops the update loop */
 export function unrenderPanel() {
   const panel = document.getElementById('variable-editor-panel');
   if (panel) panel.remove();
@@ -184,7 +184,11 @@ export function unrenderPanel() {
   stopUpdateLoop();
 }
 
-// Update existing input elements with new variable values
+/**
+ * Updates the UI to reflect changes in variable values without full re-rendering
+ * @param {Object} localVars - Current local variables object
+ * @param {Object} globalVars - Current global variables object
+ */
 export function updateExistingInputs(localVars, globalVars) {
   // Update local variables
   localItems = localItems.filter(item => {
