@@ -74,12 +74,14 @@ jQuery(async () => {
       // Remove the existing panel to prevent showing old variables
       document.getElementById(PANEL_ID)?.remove();
       
-      // Re-render the panel when chat changes
-      renderPanel();
-      const panel = document.getElementById(PANEL_ID);
-      if (panel) {
-        panel.style.display = extension_settings[EXTENSION_NAME].isShown ? 'block' : 'none';
-      }
+      // Defer rendering to ensure DOM updates have completed
+      setTimeout(() => {
+        renderPanel();
+        const panel = document.getElementById(PANEL_ID);
+        if (panel) {
+          panel.style.display = extension_settings[EXTENSION_NAME].isShown ? 'block' : 'none';
+        }
+      }, 0);
     });
 
     // Extension initialization complete
