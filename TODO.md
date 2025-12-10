@@ -67,7 +67,7 @@
 ## Code Style & Consistency
 
 - [X] Inconsistent naming: extensionName vs EXTENSION_NAME
-- [ ] Mixed quote styles (single vs double)
+- [X] Mixed quote styles (single vs double)
 - [ ] Some functions are overly long and could be broken down
 - [ ] Adopt a consistent code style guide (e.g., Airbnb or Google JS style)
 - [ ] Use Prettier for automatic formatting
