@@ -181,7 +181,7 @@ export function createAddRow(type) {
 /** Adds a new variable to the specified scope */
 export async function addVariable(type, providedName, providedValue) {
   try {
-    const { saveSettingsDebounced } = SillyTavern.getContext();
+    const { saveSettingsDebounced, saveMetadata } = SillyTavern.getContext();
     const store = new VariableStore(type);
 
     if (!providedName) {
@@ -195,7 +195,11 @@ export async function addVariable(type, providedName, providedValue) {
 
     store.set(providedName, providedValue);
 
-    saveSettingsDebounced();
+    if (type === VARIABLE_TYPES.LOCAL) {
+      await saveMetadata();
+    } else {
+      saveSettingsDebounced();
+    }
     toastr.success('Variable added successfully!');
     const { renderPanel } = await import('./ui.js');
     await renderPanel();
@@ -210,12 +214,16 @@ export async function addVariable(type, providedName, providedValue) {
 /** Deletes a variable from the specified scope */
 export async function deleteVariable(key, type) {
   try {
-    const { saveSettingsDebounced } = SillyTavern.getContext();
+    const { saveSettingsDebounced, saveMetadata } = SillyTavern.getContext();
     const store = new VariableStore(type);
 
     store.delete(key);
 
-    saveSettingsDebounced();
+    if (type === VARIABLE_TYPES.LOCAL) {
+      await saveMetadata();
+    } else {
+      saveSettingsDebounced();
+    }
     toastr.success('Variable deleted successfully!');
     const { renderPanel } = await import('./ui.js');
     await renderPanel();
@@ -228,13 +236,17 @@ export async function deleteVariable(key, type) {
 /** Updates the name of an existing variable */
 export async function updateVariableName(oldKey, newKey, type) {
   try {
-    const { saveSettingsDebounced } = SillyTavern.getContext();
+    const { saveSettingsDebounced, saveMetadata } = SillyTavern.getContext();
     if (oldKey === newKey) return;
 
     const store = new VariableStore(type);
     store.rename(oldKey, newKey);
 
-    saveSettingsDebounced();
+    if (type === VARIABLE_TYPES.LOCAL) {
+      await saveMetadata();
+    } else {
+      saveSettingsDebounced();
+    }
     const { renderPanel } = await import('./ui.js');
     await renderPanel();
   } catch (error) {
@@ -246,12 +258,16 @@ export async function updateVariableName(oldKey, newKey, type) {
 /** Updates the value of an existing variable */
 export async function updateVariableValue(key, value, type) {
   try {
-    const { saveSettingsDebounced } = SillyTavern.getContext();
+    const { saveSettingsDebounced, saveMetadata } = SillyTavern.getContext();
     const store = new VariableStore(type);
 
     store.set(key, value);
 
-    saveSettingsDebounced();
+    if (type === VARIABLE_TYPES.LOCAL) {
+      await saveMetadata();
+    } else {
+      saveSettingsDebounced();
+    }
     const { renderPanel } = await import('./ui.js');
     await renderPanel();
   } catch (error) {
