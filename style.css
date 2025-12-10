@@ -1,25 +1,5 @@
 /* All style elements for your extension go here */
 
-.text_pole {
-    background-color: var(--black30a);
-    color: var(--SmartThemeBodyColor);
-    border: 1px solid var(--SmartThemeBorderColor);
-    border-radius: 5px;
-    font-family: var(--mainFontFamily);
-    padding: 3px 5px;
-    width: 100%;
-    margin: 5px 0;
-    height: fit-content;
-}
-
-select.text_pole {
-    padding-right: 20px;
-    width: auto;
-    min-width: 120px;
-    margin: 0;
-    font-size: 12px;
-}
-
 .variable-editor-header {
   display: flex;
   align-items: center;
@@ -133,9 +113,20 @@ select.text_pole {
 }
 
 @keyframes value-blink {
-  0% { background-color: var(--SmartThemeEmColor, #007bff); color: var(--SmartThemeBlurTintColor, white); }
-  50% { background-color: var(--SmartThemeEmColor, #007bff); color: var(--SmartThemeBlurTintColor, white); }
-  100% { background-color: var(--black30a, #f4f4f4); color: var(--SmartThemeBodyColor, black); }
+  0% {
+    background-color: var(--SmartThemeEmColor, #007bff);
+    color: var(--SmartThemeBlurTintColor, white);
+  }
+
+  50% {
+    background-color: var(--SmartThemeEmColor, #007bff);
+    color: var(--SmartThemeBlurTintColor, white);
+  }
+
+  100% {
+    background-color: var(--black30a, #f4f4f4);
+    color: var(--SmartThemeBodyColor, black);
+  }
 }
 
 /* Collapsible drawer styles */
@@ -230,4 +221,36 @@ select.text_pole {
 .resize-handle:active {
   background: rgba(128, 128, 128, 0.2);
   border-left: 2px solid var(--SmartThemeEmColor, blue);
+}
+
+
+.text_pole {
+  background-color: var(--black30a);
+  color: var(--SmartThemeBodyColor);
+  border: 1px solid var(--SmartThemeBorderColor);
+  border-radius: 5px;
+  font-family: var(--mainFontFamily);
+  padding: 3px 5px;
+  width: 100%;
+  margin: 5px 0;
+  height: fit-content;
+}
+
+select.text_pole {
+  padding-right: 20px;
+  width: auto;
+  min-width: 120px;
+  margin: 0;
+  font-size: 12px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .variable-editor-panel {
+    width: 95vw;
+    max-height: 50vh;
+    top: 60px;
+    left: 2.5vw;
+    right: auto;
+  }
 }
