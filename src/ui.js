@@ -57,7 +57,8 @@ export function renderPanel() {
   setupResize(panel);
   panel.appendChild(createHeader());
   panel.appendChild(createDragHandle());
-  panel.appendChild(createVariableSection('Local Variables', true, !characterId));
+  panel.appendChild(
+      createVariableSection('Local Variables', true, !characterId));
   panel.appendChild(createVariableSection('Global Variables', false, false));
 
   document.body.appendChild(panel);
@@ -80,8 +81,7 @@ export function renderPanel() {
 function createPanel() {
   const panel = document.createElement('div');
   panel.id = UI_CONSTANTS.PANEL_ID;
-  panel.classList.add(
-      UI_CONSTANTS.CSS_CLASSES.PANEL, 'fillRight', 'openDrawer', 'pinnedOpen');
+  panel.classList.add(UI_CONSTANTS.CSS_CLASSES.PANEL);
   return panel;
 }
 
