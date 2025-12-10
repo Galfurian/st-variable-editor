@@ -1,5 +1,4 @@
 // Utility functions for Variable Editor
-import { chat_metadata } from "../../../../../script.js";
 
 // Extension configuration
 const EXTENSION_NAME = "st-variable-editor";
@@ -22,8 +21,9 @@ class VariableStore {
   /** Gets all variables for this store type */
   getAll() {
     if (this.type === VARIABLE_TYPES.LOCAL) {
-      if (!chat_metadata.variables) chat_metadata.variables = {};
-      return chat_metadata.variables;
+      const { chatMetadata } = SillyTavern.getContext();
+      if (!chatMetadata.variables) chatMetadata.variables = {};
+      return chatMetadata.variables;
     } else {
       const { extensionSettings } = SillyTavern.getContext();
       if (!extensionSettings.variables) extensionSettings.variables = {};

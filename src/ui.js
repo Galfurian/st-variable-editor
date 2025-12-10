@@ -1,5 +1,4 @@
 // UI rendering and DOM manipulation for Variable Editor
-import { chat_metadata } from "../../../../../script.js";
 import { VariableItem, createAddRow, VARIABLE_TYPES } from './utils.js';
 import { startUpdateLoop, stopUpdateLoop, updatePreviousVars } from './state.js';
 
@@ -35,7 +34,8 @@ export function renderPanel() {
   document.body.appendChild(panel);
 
   // Update previous variable states
-  updatePreviousVars(chat_metadata.variables || {}, extensionSettings.variables?.global || {});
+  const { chatMetadata } = SillyTavern.getContext();
+  updatePreviousVars(chatMetadata.variables || {}, extensionSettings.variables?.global || {});
 
   // Start the continuous update loop
   startUpdateLoop();
@@ -151,7 +151,8 @@ function createVariableSection(title, isLocal) {
   if (isLocal) {
     localContentRef = content;
     localItems = [];
-    const vars = chat_metadata.variables || {};
+    const { chatMetadata } = SillyTavern.getContext();
+    const vars = chatMetadata.variables || {};
     for (const key in vars) {
       const item = new VariableItem(key, vars[key], VARIABLE_TYPES.LOCAL);
       localItems.push(item);
