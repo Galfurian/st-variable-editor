@@ -2,10 +2,61 @@
 import { chat_metadata } from "../../../../../script.js";
 
 // Extension configuration
-const extensionName = "st-variable-editor";
+const EXTENSION_NAME = "st-variable-editor";
 
 // Debug prefix for console messages
 const CONSOLE_PREFIX = '[Variable Editor] ';
+
+// Variable types constants
+const VARIABLE_TYPES = {
+  LOCAL: 'local',
+  GLOBAL: 'global'
+};
+
+// Variable store class to abstract local/global variable handling
+class VariableStore {
+  constructor(type) {
+    this.type = type;
+  }
+
+  /** Gets all variables for this store type */
+  getAll() {
+    if (this.type === VARIABLE_TYPES.LOCAL) {
+      return chat_metadata.variables || {};
+    } else {
+      const { extensionSettings } = SillyTavern.getContext();
+      return extensionSettings.variables?.global || {};
+    }
+  }
+
+  /** Sets a variable in this store */
+  set(key, value) {
+    const vars = this.getAll();
+    vars[key] = value;
+
+    // Ensure global structure exists
+    if (this.type === VARIABLE_TYPES.GLOBAL) {
+      const { extensionSettings } = SillyTavern.getContext();
+      if (!extensionSettings.variables) extensionSettings.variables = {};
+      if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
+    }
+  }
+
+  /** Deletes a variable from this store */
+  delete(key) {
+    const vars = this.getAll();
+    delete vars[key];
+  }
+
+  /** Renames a variable in this store */
+  rename(oldKey, newKey) {
+    const vars = this.getAll();
+    if (vars[oldKey] !== undefined) {
+      vars[newKey] = vars[oldKey];
+      delete vars[oldKey];
+    }
+  }
+}
 
 // Variable item class for better management.
 class VariableItem {
@@ -90,7 +141,7 @@ class VariableItem {
   }
 }
 
-export { VariableItem };
+export { VariableItem, VARIABLE_TYPES };
 
 // Create an add row element
 /** Creates a row for adding new variables */
@@ -134,7 +185,8 @@ export function createAddRow(type) {
 /** Adds a new variable to the specified scope */
 export async function addVariable(type, providedName, providedValue) {
   try {
-    const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+    const { saveSettingsDebounced } = SillyTavern.getContext();
+    const store = new VariableStore(type);
 
     if (!providedName) {
       toastr.error('Variable name cannot be empty.');
@@ -145,14 +197,7 @@ export async function addVariable(type, providedName, providedValue) {
       return false;
     }
 
-    if (type === 'local') {
-      if (!chat_metadata.variables) chat_metadata.variables = {};
-      chat_metadata.variables[providedName] = providedValue;
-    } else {
-      if (!extensionSettings.variables) extensionSettings.variables = {};
-      if (!extensionSettings.variables.global) extensionSettings.variables.global = {};
-      extensionSettings.variables.global[providedName] = providedValue;
-    }
+    store.set(providedName, providedValue);
 
     saveSettingsDebounced();
     toastr.success('Variable added successfully!');
@@ -169,17 +214,10 @@ export async function addVariable(type, providedName, providedValue) {
 /** Deletes a variable from the specified scope */
 export async function deleteVariable(key, type) {
   try {
-    const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+    const { saveSettingsDebounced } = SillyTavern.getContext();
+    const store = new VariableStore(type);
 
-    if (type === 'local') {
-      if (chat_metadata.variables) {
-        delete chat_metadata.variables[key];
-      }
-    } else {
-      if (extensionSettings.variables?.global) {
-        delete extensionSettings.variables.global[key];
-      }
-    }
+    store.delete(key);
 
     saveSettingsDebounced();
     toastr.success('Variable deleted successfully!');
@@ -194,22 +232,11 @@ export async function deleteVariable(key, type) {
 /** Updates the name of an existing variable */
 export async function updateVariableName(oldKey, newKey, type) {
   try {
-    const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+    const { saveSettingsDebounced } = SillyTavern.getContext();
     if (oldKey === newKey) return;
 
-    if (type === 'local') {
-      const vars = chat_metadata.variables;
-      if (vars && vars[oldKey] !== undefined) {
-        vars[newKey] = vars[oldKey];
-        delete vars[oldKey];
-      }
-    } else {
-      const vars = extensionSettings.variables?.global;
-      if (vars && vars[oldKey] !== undefined) {
-        vars[newKey] = vars[oldKey];
-        delete vars[oldKey];
-      }
-    }
+    const store = new VariableStore(type);
+    store.rename(oldKey, newKey);
 
     saveSettingsDebounced();
     const { renderPanel } = await import('./ui.js');
@@ -223,19 +250,10 @@ export async function updateVariableName(oldKey, newKey, type) {
 /** Updates the value of an existing variable */
 export async function updateVariableValue(key, value, type) {
   try {
-    const { extensionSettings, saveSettingsDebounced } = SillyTavern.getContext();
+    const { saveSettingsDebounced } = SillyTavern.getContext();
+    const store = new VariableStore(type);
 
-    if (type === 'local') {
-      const vars = chat_metadata.variables;
-      if (vars) {
-        vars[key] = value;
-      }
-    } else {
-      const vars = extensionSettings.variables?.global;
-      if (vars) {
-        vars[key] = value;
-      }
-    }
+    store.set(key, value);
 
     saveSettingsDebounced();
     const { renderPanel } = await import('./ui.js');

@@ -1,10 +1,10 @@
 // UI rendering and DOM manipulation for Variable Editor
 import { chat_metadata } from "../../../../../script.js";
-import { VariableItem, createAddRow } from './utils.js';
+import { VariableItem, createAddRow, VARIABLE_TYPES } from './utils.js';
 import { startUpdateLoop, stopUpdateLoop, updatePreviousVars } from './state.js';
 
 // Extension configuration
-const extensionName = "st-variable-editor";
+const EXTENSION_NAME = "st-variable-editor";
 
 // Debug prefix for console messages
 const CONSOLE_PREFIX = '[Variable Editor] ';
@@ -19,7 +19,7 @@ let globalItems = [];
 // Render the variable editor panel
 export function renderPanel() {
   const { extensionSettings } = SillyTavern.getContext();
-  if (!extensionSettings[extensionName].isShown) return;
+  if (!extensionSettings[EXTENSION_NAME].isShown) return;
 
   // Remove existing panel if it exists
   document.getElementById('variable-editor-panel')?.remove();
@@ -106,7 +106,7 @@ function createHeader() {
   closeBtn.classList.add('fa-solid', 'fa-circle-xmark');
   closeBtn.onclick = () => {
     const { extensionSettings } = SillyTavern.getContext();
-    extensionSettings[extensionName].isShown = false;
+    extensionSettings[EXTENSION_NAME].isShown = false;
     const panel = document.getElementById('variable-editor-panel');
     if (panel) panel.style.display = 'none';
   };
@@ -153,21 +153,21 @@ function createVariableSection(title, isLocal) {
     localItems = [];
     const vars = chat_metadata.variables || {};
     for (const key in vars) {
-      const item = new VariableItem(key, vars[key], 'local');
+      const item = new VariableItem(key, vars[key], VARIABLE_TYPES.LOCAL);
       localItems.push(item);
       content.append(item.render());
     }
-    content.append(createAddRow('local'));
+    content.append(createAddRow(VARIABLE_TYPES.LOCAL));
   } else {
     globalContentRef = content;
     globalItems = [];
     const vars = extensionSettings.variables?.global || {};
     for (const key in vars) {
-      const item = new VariableItem(key, vars[key], 'global');
+      const item = new VariableItem(key, vars[key], VARIABLE_TYPES.GLOBAL);
       globalItems.push(item);
       content.append(item.render());
     }
-    content.append(createAddRow('global'));
+    content.append(createAddRow(VARIABLE_TYPES.GLOBAL));
   }
 
   div.append(content);
@@ -205,7 +205,7 @@ export function updateExistingInputs(localVars, globalVars) {
   // Add new local variables
   for (const key in localVars) {
     if (!localItems.find(item => item.key === key)) {
-      const item = new VariableItem(key, localVars[key], 'local');
+      const item = new VariableItem(key, localVars[key], VARIABLE_TYPES.LOCAL);
       localItems.push(item);
       localContentRef.append(item.render());
     }
@@ -231,7 +231,7 @@ export function updateExistingInputs(localVars, globalVars) {
   // Add new global variables
   for (const key in globalVars) {
     if (!globalItems.find(item => item.key === key)) {
-      const item = new VariableItem(key, globalVars[key], 'global');
+      const item = new VariableItem(key, globalVars[key], VARIABLE_TYPES.GLOBAL);
       globalItems.push(item);
       globalContentRef.append(item.render());
     }

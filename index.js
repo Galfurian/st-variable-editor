@@ -13,21 +13,21 @@ import { renderPanel } from './src/ui.js';
 const CONSOLE_PREFIX = '[Variable Editor] ';
 
 // Extension configuration
-const extensionName = "st-variable-editor";
+const EXTENSION_NAME = "st-variable-editor";
 const defaultSettings = {
     isShown: false,
     fontSize: 1.0
 };
 
 // Initialize extension settings if they don't exist
-if (!extension_settings[extensionName]) {
-  extension_settings[extensionName] = { ...defaultSettings };
+if (!extension_settings[EXTENSION_NAME]) {
+  extension_settings[EXTENSION_NAME] = { ...defaultSettings };
 }
 
 // Register slash command immediately (like temp_viewer does)
 registerSlashCommand('variableeditor', () => {
-  extension_settings[extensionName].isShown = !extension_settings[extensionName].isShown;
-  if (extension_settings[extensionName].isShown) {
+  extension_settings[EXTENSION_NAME].isShown = !extension_settings[EXTENSION_NAME].isShown;
+  if (extension_settings[EXTENSION_NAME].isShown) {
     renderPanel();
   } else {
     const panel = document.getElementById('variable-editor-panel');
@@ -47,7 +47,7 @@ jQuery(async () => {
     renderPanel();
     const panel = document.getElementById('variable-editor-panel');
     if (panel) {
-      panel.style.display = extension_settings[extensionName].isShown ? 'block' : 'none';
+      panel.style.display = extension_settings[EXTENSION_NAME].isShown ? 'block' : 'none';
     }
 
     // Add event listeners for dynamic updates
@@ -56,7 +56,7 @@ jQuery(async () => {
       renderPanel();
       const panel = document.getElementById('variable-editor-panel');
       if (panel) {
-        panel.style.display = extension_settings[extensionName].isShown ? 'block' : 'none';
+        panel.style.display = extension_settings[EXTENSION_NAME].isShown ? 'block' : 'none';
       }
     });
 
