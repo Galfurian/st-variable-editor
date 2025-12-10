@@ -263,6 +263,29 @@ export async function addVariable(type, providedName, providedValue) {
       return false;
     }
 
+    // Validate variable value length
+    if (providedValue.length > 1000) {
+      toastr.error('Variable value cannot exceed 1000 characters.');
+      return false;
+    }
+
+    // Validate variable name
+    if (providedName.length > 50) {
+      toastr.error('Variable name cannot exceed 50 characters.');
+      return false;
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(providedName)) {
+      toastr.error('Variable name can only contain letters, numbers, underscores, and dashes.');
+      return false;
+    }
+
+    // Check for duplicates
+    const existingVars = store.getAll();
+    if (existingVars[providedName] !== undefined) {
+      toastr.error('A variable with this name already exists.');
+      return false;
+    }
+
     store.set(providedName, providedValue);
 
     if (type === VARIABLE_TYPES.LOCAL) {
@@ -319,7 +342,27 @@ export async function updateVariableName(oldKey, newKey, type) {
     const {saveSettingsDebounced, saveMetadata} = SillyTavern.getContext();
     if (oldKey === newKey) return;
 
+    // Validate new variable name
+    if (!newKey) {
+      toastr.error('Variable name cannot be empty.');
+      return false;
+    }
+    if (newKey.length > 50) {
+      toastr.error('Variable name cannot exceed 50 characters.');
+      return false;
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(newKey)) {
+      toastr.error('Variable name can only contain letters, numbers, underscores, and dashes.');
+      return false;
+    }
+
     const store = new VariableStore(type);
+    const existingVars = store.getAll();
+    if (existingVars[newKey] !== undefined && newKey !== oldKey) {
+      toastr.error('A variable with this name already exists.');
+      return false;
+    }
+
     store.rename(oldKey, newKey);
 
     if (type === VARIABLE_TYPES.LOCAL) {
@@ -345,6 +388,12 @@ export async function updateVariableValue(key, value, type) {
   try {
     const {saveSettingsDebounced, saveMetadata} = SillyTavern.getContext();
     const store = new VariableStore(type);
+
+    // Validate variable value length
+    if (value.length > 1000) {
+      toastr.error('Variable value cannot exceed 1000 characters.');
+      return false;
+    }
 
     store.set(key, value);
 
