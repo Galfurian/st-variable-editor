@@ -46,7 +46,7 @@ let globalSortPreference = UI_CONSTANTS.DEFAULT_SORT;
  * sections
  */
 export function renderPanel() {
-  const {extensionSettings} = SillyTavern.getContext();
+  const {extensionSettings, chat} = SillyTavern.getContext();
   if (!extensionSettings[EXTENSION_NAME].isShown) return;
 
   // Remove existing panel if it exists
@@ -57,8 +57,8 @@ export function renderPanel() {
   setupResize(panel);
   panel.appendChild(createHeader());
   panel.appendChild(createDragHandle());
-  panel.appendChild(createVariableSection('Local Variables', true));
-  panel.appendChild(createVariableSection('Global Variables', false));
+  panel.appendChild(createVariableSection('Local Variables', true, !chat));
+  panel.appendChild(createVariableSection('Global Variables', false, false));
 
   document.body.appendChild(panel);
 
@@ -176,9 +176,10 @@ function createDragHandle() {
  * Creates a variable section (local or global) with items and add row
  * @param {string} title - The section title
  * @param {boolean} isLocal - Whether this is the local variables section
+ * @param {boolean} addRowDisabled - Whether the add row should be disabled
  * @returns {HTMLElement} The section element
  */
-function createVariableSection(title, isLocal) {
+function createVariableSection(title, isLocal, addRowDisabled = false) {
   const {extensionSettings} = SillyTavern.getContext();
 
   const div = document.createElement('div');
@@ -239,7 +240,7 @@ function createVariableSection(title, isLocal) {
       const item = new VariableItem(key, vars[key], VARIABLE_TYPES.LOCAL);
       localItems.push(item);
     }
-    content.append(createAddRow(VARIABLE_TYPES.LOCAL));
+    content.append(createAddRow(VARIABLE_TYPES.LOCAL, addRowDisabled));
     // Sort items initially
     sortVariables(localItems, localSortPreference, content);
   } else {
@@ -250,7 +251,7 @@ function createVariableSection(title, isLocal) {
       const item = new VariableItem(key, vars[key], VARIABLE_TYPES.GLOBAL);
       globalItems.push(item);
     }
-    content.append(createAddRow(VARIABLE_TYPES.GLOBAL));
+    content.append(createAddRow(VARIABLE_TYPES.GLOBAL, false));
     // Sort items initially
     sortVariables(globalItems, globalSortPreference, content);
   }

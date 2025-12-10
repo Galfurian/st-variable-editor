@@ -59,7 +59,15 @@ jQuery(async () => {
     }
 
     // Add event listeners for dynamic updates
-    eventSource.on(event_types.CHAT_CHANGED, () => {
+    eventSource.on(event_types.CHAT_CHANGED, async () => {
+      const { chat, chatMetadata, saveMetadata } = SillyTavern.getContext();
+      
+      // If no chat is opened, clear local variables
+      if (!chat) {
+        chatMetadata.variables = {};
+        await saveMetadata();
+      }
+      
       // Stop the current update loop to prevent interference
       stopUpdateLoop();
       

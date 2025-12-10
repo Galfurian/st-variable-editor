@@ -189,9 +189,10 @@ export {VariableItem, VARIABLE_TYPES};
 /**
  * Creates a row for adding new variables.
  * @param {*} type the variable type (local/global).
+ * @param {boolean} disabled whether the inputs should be disabled.
  * @returns {HTMLElement} The add row element.
  */
-export function createAddRow(type) {
+export function createAddRow(type, disabled = false) {
   const row = document.createElement('div');
   row.classList.add('variable-row');
 
@@ -199,11 +200,13 @@ export function createAddRow(type) {
   nameInput.type = 'text';
   nameInput.placeholder = 'Variable name';
   nameInput.classList.add('var-name');
+  nameInput.disabled = disabled;
 
   const valueInput = document.createElement('input');
   valueInput.type = 'text';
   valueInput.placeholder = 'Variable value';
   valueInput.classList.add('var-value');
+  valueInput.disabled = disabled;
 
   // Add Enter key support for adding variable
   valueInput.addEventListener('keydown', async (event) => {
@@ -222,6 +225,7 @@ export function createAddRow(type) {
   const addBtn = document.createElement('button');
   addBtn.classList.add('menu_button', 'menu_button_icon');
   addBtn.title = 'Add variable';
+  addBtn.disabled = disabled;
   const icon = document.createElement('i');
   icon.classList.add('fa-fw', 'fa-solid', 'fa-file-circle-plus');
   addBtn.append(icon);
