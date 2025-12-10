@@ -61,7 +61,7 @@
 ## Manifest & Extension Standards
 
 - [X] Add auto_update: true to manifest.json for automatic updates
-- [ ] Include minimum_client_version if there are specific SillyTavern version requirements
+- [X] Include minimum_client_version if there are specific SillyTavern version requirements
 - [ ] Add i18n support for internationalization if targeting multiple languages
 
 ## Code Style & Consistency
