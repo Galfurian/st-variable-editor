@@ -46,7 +46,7 @@ let globalSortPreference = UI_CONSTANTS.DEFAULT_SORT;
  * sections
  */
 export function renderPanel() {
-  const {extensionSettings, chat} = SillyTavern.getContext();
+  const {extensionSettings, characterId} = SillyTavern.getContext();
   if (!extensionSettings[EXTENSION_NAME].isShown) return;
 
   // Remove existing panel if it exists
@@ -57,7 +57,7 @@ export function renderPanel() {
   setupResize(panel);
   panel.appendChild(createHeader());
   panel.appendChild(createDragHandle());
-  panel.appendChild(createVariableSection('Local Variables', true, !chat));
+  panel.appendChild(createVariableSection('Local Variables', true, !characterId));
   panel.appendChild(createVariableSection('Global Variables', false, false));
 
   document.body.appendChild(panel);
