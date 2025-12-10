@@ -56,7 +56,7 @@
 
 - [ ] Validate variable names against a whitelist pattern
 - [X] Sanitize all user inputs before storage
-- [ ] Consider Content Security Policy compliance if adding dynamic content
+- [X] Consider Content Security Policy compliance if adding dynamic content
 
 ## Manifest & Extension Standards
 
