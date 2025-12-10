@@ -50,7 +50,7 @@
 - [ ] Add API documentation for public functions
 - [ ] Include development setup instructions (if any build steps are added)
 - [X] Add code comments explaining complex logic (e.g., the update loop algorithm)
-- [ ] Create contribution guidelines beyond the basic Git workflow
+- [X] Create contribution guidelines beyond the basic Git workflow
 
 ## Security Considerations
 
