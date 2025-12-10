@@ -207,7 +207,7 @@ export function updateExistingInputs(localVars, globalVars) {
     if (!localItems.find(item => item.key === key)) {
       const item = new VariableItem(key, localVars[key], VARIABLE_TYPES.LOCAL);
       localItems.push(item);
-      localContentRef.append(item.render());
+      localContentRef.insertBefore(item.render(), localContentRef.lastChild);
     }
   }
 
@@ -233,7 +233,7 @@ export function updateExistingInputs(localVars, globalVars) {
     if (!globalItems.find(item => item.key === key)) {
       const item = new VariableItem(key, globalVars[key], VARIABLE_TYPES.GLOBAL);
       globalItems.push(item);
-      globalContentRef.append(item.render());
+      globalContentRef.insertBefore(item.render(), globalContentRef.lastChild);
     }
   }
 }
