@@ -14,12 +14,32 @@ const EXTENSION_NAME = 'st-variable-editor';
 // Debug prefix for console messages
 const CONSOLE_PREFIX = '[Variable Editor] ';
 
+// UI Constants
+const UI_CONSTANTS = {
+  PANEL_ID: 'variable-editor-panel',
+  DRAG_HANDLE_ID: 'variable-editor-drag-handle',
+  DEFAULT_SORT: 'alpha-asc',
+  CSS_CLASSES: {
+    PANEL: 'variable-editor-panel',
+    HEADER: 'variable-editor-header',
+    SECTION: 'variable-section',
+    CONTENT: 'variable-content',
+    ROW: 'variable-row',
+    NAME_INPUT: 'var-name',
+    VALUE_INPUT: 'var-value'
+  }
+};
+
 // Store references to content elements for toggle handlers
 let localContentRef, globalContentRef;
 
 // Variable item lists for better management
 let localItems = [];
 let globalItems = [];
+
+// Current sort preferences
+let localSortPreference = UI_CONSTANTS.DEFAULT_SORT;
+let globalSortPreference = UI_CONSTANTS.DEFAULT_SORT;
 
 /**
  * Renders the main variable editor panel with local and global variable
@@ -30,7 +50,7 @@ export function renderPanel() {
   if (!extensionSettings[EXTENSION_NAME].isShown) return;
 
   // Remove existing panel if it exists
-  document.getElementById('variable-editor-panel')?.remove();
+  document.getElementById(UI_CONSTANTS.PANEL_ID)?.remove();
 
   // Create and setup the panel
   const panel = createPanel();
@@ -59,9 +79,9 @@ export function renderPanel() {
  */
 function createPanel() {
   const panel = document.createElement('div');
-  panel.id = 'variable-editor-panel';
+  panel.id = UI_CONSTANTS.PANEL_ID;
   panel.classList.add(
-      'variable-editor-panel', 'fillRight', 'openDrawer', 'pinnedOpen');
+      UI_CONSTANTS.CSS_CLASSES.PANEL, 'fillRight', 'openDrawer', 'pinnedOpen');
   return panel;
 }
 
@@ -113,10 +133,7 @@ function setupResize(panel) {
  */
 function createHeader() {
   const header = document.createElement('div');
-  header.classList.add('variable-editor-header');
-  header.style.display = 'flex';
-  header.style.alignItems = 'center';
-  header.style.justifyContent = 'space-between';
+  header.classList.add(UI_CONSTANTS.CSS_CLASSES.HEADER);
   header.style.marginBottom = '10px';
 
   const title = document.createElement('h3');
@@ -130,7 +147,7 @@ function createHeader() {
   closeBtn.onclick = () => {
     const {extensionSettings} = SillyTavern.getContext();
     extensionSettings[EXTENSION_NAME].isShown = false;
-    const panel = document.getElementById('variable-editor-panel');
+    const panel = document.getElementById(UI_CONSTANTS.PANEL_ID);
     if (panel) panel.style.display = 'none';
   };
   closeBtn.style.border = 'none';
@@ -165,19 +182,54 @@ function createVariableSection(title, isLocal) {
   const {extensionSettings} = SillyTavern.getContext();
 
   const div = document.createElement('div');
-  div.classList.add('variable-section');
+  div.classList.add(UI_CONSTANTS.CSS_CLASSES.SECTION);
 
   const sectionHeader = document.createElement('div');
-  sectionHeader.classList.add('variable-editor-header');
+  sectionHeader.classList.add(UI_CONSTANTS.CSS_CLASSES.HEADER);
+  sectionHeader.style.marginBottom = '5px';
 
   const sectionTitle = document.createElement('b');
   sectionTitle.textContent = title;
   sectionHeader.append(sectionTitle);
 
+  // Add sorting dropdown
+  const sortSelect = document.createElement('select');
+  sortSelect.classList.add('text_pole');
+
+  const sortOptions = [
+    {value: 'alpha-asc', text: 'A-Z'}, {value: 'alpha-desc', text: 'Z-A'},
+    {value: 'length-asc', text: 'Shortest'},
+    {value: 'length-desc', text: 'Longest'}
+  ];
+
+  sortOptions.forEach(option => {
+    const optionElement = document.createElement('option');
+    optionElement.value = option.value;
+    optionElement.textContent = option.text;
+    sortSelect.append(optionElement);
+  });
+
+  // Set current sorting preference
+  sortSelect.value = isLocal ? localSortPreference : globalSortPreference;
+
+  // Add sorting functionality
+  sortSelect.onchange = () => {
+    const sortValue = sortSelect.value;
+    if (isLocal) {
+      localSortPreference = sortValue;
+    } else {
+      globalSortPreference = sortValue;
+    }
+    sortVariables(
+        isLocal ? localItems : globalItems, sortValue, content, isLocal);
+  };
+
+  sectionHeader.append(sortSelect);
+
   div.append(sectionHeader);
 
   const content = document.createElement('div');
-  content.classList.add('variable-content');
+  content.classList.add(UI_CONSTANTS.CSS_CLASSES.CONTENT);
 
   if (isLocal) {
     localContentRef = content;
@@ -187,8 +239,9 @@ function createVariableSection(title, isLocal) {
     for (const key in vars) {
       const item = new VariableItem(key, vars[key], VARIABLE_TYPES.LOCAL);
       localItems.push(item);
-      content.append(item.render());
     }
+    // Sort items initially
+    sortVariables(localItems, localSortPreference, content, true);
     content.append(createAddRow(VARIABLE_TYPES.LOCAL));
   } else {
     globalContentRef = content;
@@ -197,8 +250,9 @@ function createVariableSection(title, isLocal) {
     for (const key in vars) {
       const item = new VariableItem(key, vars[key], VARIABLE_TYPES.GLOBAL);
       globalItems.push(item);
-      content.append(item.render());
     }
+    // Sort items initially
+    sortVariables(globalItems, globalSortPreference, content, false);
     content.append(createAddRow(VARIABLE_TYPES.GLOBAL));
   }
 
@@ -208,7 +262,7 @@ function createVariableSection(title, isLocal) {
 
 /** Removes the variable editor panel from the DOM and stops the update loop */
 export function unrenderPanel() {
-  const panel = document.getElementById('variable-editor-panel');
+  const panel = document.getElementById(UI_CONSTANTS.PANEL_ID);
   if (panel) panel.remove();
 
   // Clear item references to prevent memory leaks
@@ -282,4 +336,48 @@ export function updateExistingInputs(localVars, globalVars) {
       globalContentRef.insertBefore(item.render(), globalContentRef.lastChild);
     }
   }
+
+  // Re-sort items to maintain current sort order
+  if (localContentRef) {
+    sortVariables(localItems, localSortPreference, localContentRef, true);
+  }
+  if (globalContentRef) {
+    sortVariables(globalItems, globalSortPreference, globalContentRef, false);
+  }
+}
+
+/**
+ * Sorts variable items based on the selected criteria
+ * @param {Array} items - Array of VariableItem instances
+ * @param {string} sortType - Sort type ('alpha-asc', 'alpha-desc',
+ *     'length-asc', 'length-desc')
+ * @param {HTMLElement} content - The content container element
+ * @param {boolean} isLocal - Whether this is for local variables
+ */
+function sortVariables(items, sortType, content, isLocal) {
+  // Sort the items array
+  items.sort((a, b) => {
+    switch (sortType) {
+      case 'alpha-asc':
+        return a.key.localeCompare(b.key);
+      case 'alpha-desc':
+        return b.key.localeCompare(a.key);
+      case 'length-asc':
+        return a.key.length - b.key.length || a.key.localeCompare(b.key);
+      case 'length-desc':
+        return b.key.length - a.key.length || a.key.localeCompare(b.key);
+      default:
+        return 0;
+    }
+  });
+
+  // Reorder DOM elements (excluding the add row which is last)
+  const addRow = content.lastChild;
+  content.innerHTML = '';
+
+  items.forEach(item => {
+    content.appendChild(item.render());
+  });
+
+  content.appendChild(addRow);
 }

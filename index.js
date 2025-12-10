@@ -13,6 +13,9 @@ import { stopUpdateLoop } from './src/state.js';
 // Debug prefix for console messages
 const CONSOLE_PREFIX = '[Variable Editor] ';
 
+// UI Constants
+const PANEL_ID = 'variable-editor-panel';
+
 // Extension configuration
 const EXTENSION_NAME = 'st-variable-editor';
 const defaultSettings = {
@@ -33,7 +36,7 @@ registerSlashCommand('variableeditor', () => {
   if (extension_settings[EXTENSION_NAME].isShown) {
     renderPanel();
   } else {
-    const panel = document.getElementById('variable-editor-panel');
+    const panel = document.getElementById(PANEL_ID);
     if (panel) panel.style.display = 'none';
   }
   saveSettingsDebounced();
@@ -48,7 +51,7 @@ jQuery(async () => {
 
     // Always render the panel (but keep it hidden initially)
     renderPanel();
-    const panel = document.getElementById('variable-editor-panel');
+    const panel = document.getElementById(PANEL_ID);
     if (panel) {
       panel.style.display = extension_settings[EXTENSION_NAME].isShown ? 'block' : 'none';
     }
@@ -60,7 +63,7 @@ jQuery(async () => {
       
       // Re-render the panel when chat changes
       renderPanel();
-      const panel = document.getElementById('variable-editor-panel');
+      const panel = document.getElementById(PANEL_ID);
       if (panel) {
         panel.style.display = extension_settings[EXTENSION_NAME].isShown ? 'block' : 'none';
       }

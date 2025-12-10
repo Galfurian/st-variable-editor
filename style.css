@@ -1,5 +1,31 @@
 /* All style elements for your extension go here */
 
+.text_pole {
+    background-color: var(--black30a);
+    color: var(--SmartThemeBodyColor);
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 5px;
+    font-family: var(--mainFontFamily);
+    padding: 3px 5px;
+    width: 100%;
+    margin: 5px 0;
+    height: fit-content;
+}
+
+select.text_pole {
+    padding-right: 20px;
+    width: auto;
+    min-width: 120px;
+    margin: 0;
+    font-size: 12px;
+}
+
+.variable-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .variable-editor-panel {
   position: fixed;
   top: 100px;
