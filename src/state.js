@@ -68,6 +68,10 @@ export async function startUpdateLoop() {
  */
 export function stopUpdateLoop() {
   isUpdating = false;
+  
+  // Clear DOM references to prevent memory leaks
+  localVarInputs.clear();
+  globalVarInputs.clear();
 }
 
 /**

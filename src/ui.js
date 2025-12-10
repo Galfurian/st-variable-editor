@@ -211,6 +211,12 @@ export function unrenderPanel() {
   const panel = document.getElementById('variable-editor-panel');
   if (panel) panel.remove();
 
+  // Clear item references to prevent memory leaks
+  localItems = [];
+  globalItems = [];
+  localContentRef = null;
+  globalContentRef = null;
+
   // Stop the continuous update loop
   stopUpdateLoop();
 }
