@@ -23,7 +23,7 @@ let isUpdating = false;
  * Starts a continuous polling loop to detect and update variable changes
  * 
  * Algorithm Overview:
- * 1. Polls every 100ms while panel is visible (balance between responsiveness and performance)
+ * 1. Polls every 500ms while panel is visible (balance between responsiveness and performance)
  * 2. Compares current variables against previous state using JSON stringification
  * 3. If changes detected:
  *    - Structure changes (keys added/removed): Full panel re-render required
@@ -65,8 +65,8 @@ export async function startUpdateLoop() {
         }
       }
 
-      // Wait 100ms before next check (faster updates)
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait 500ms before next check (reduced frequency for better performance)
+      await new Promise(resolve => setTimeout(resolve, 500));
     } catch (error) {
       console.error(CONSOLE_PREFIX, 'Error in update loop:', error);
       await new Promise(resolve => setTimeout(resolve, 500)); // Wait longer on error

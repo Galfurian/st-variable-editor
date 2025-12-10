@@ -13,7 +13,7 @@
 - [ ] Unnecessary re-renders: Manual operations (add/delete/update) trigger renderPanel(), but the update loop may immediately detect changes and update again, causing double work.
 - [ ] DOM queries: Frequent document.querySelector calls in storeInputReferences could be optimized with cached references.
 - [ ] Implement event-driven updates where possible (e.g., listen for SillyTavern's variable change events)
-- [ ] Add throttling to the update loop or increase interval to 500ms for less critical updates
+- [X] Add throttling to the update loop or increase interval to 500ms for less critical updates
 - [ ] Cache DOM element references instead of querying repeatedly
 - [ ] Use requestAnimationFrame for UI updates to sync with browser repaint cycles
 
