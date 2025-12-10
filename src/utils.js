@@ -299,8 +299,6 @@ export async function addVariable(type, providedName, providedValue) {
       saveSettingsDebounced();
     }
     toastr.success('Variable added successfully!');
-    const {renderPanel} = await import('./ui.js');
-    await renderPanel();
     return true;
   } catch (error) {
     console.error(CONSOLE_PREFIX, 'Error adding variable:', error);
@@ -327,8 +325,6 @@ export async function deleteVariable(key, type) {
       saveSettingsDebounced();
     }
     toastr.success('Variable deleted successfully!');
-    const {renderPanel} = await import('./ui.js');
-    await renderPanel();
   } catch (error) {
     console.error(CONSOLE_PREFIX, 'Error deleting variable:', error);
     toastr.error('Failed to delete variable. Please try again.');
@@ -375,8 +371,6 @@ export async function updateVariableName(oldKey, newKey, type) {
     } else {
       saveSettingsDebounced();
     }
-    const {renderPanel} = await import('./ui.js');
-    await renderPanel();
   } catch (error) {
     console.error(CONSOLE_PREFIX, 'Error updating variable name:', error);
     toastr.error('Failed to update variable name. Please try again.');
@@ -412,8 +406,6 @@ export async function updateVariableValue(key, value, type) {
     } else {
       saveSettingsDebounced();
     }
-    const {renderPanel} = await import('./ui.js');
-    await renderPanel();
   } catch (error) {
     console.error(CONSOLE_PREFIX, 'Error updating variable value:', error);
     toastr.error('Failed to update variable value. Please try again.');

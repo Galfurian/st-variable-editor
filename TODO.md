@@ -10,7 +10,7 @@
 ## Performance Optimizations
 
 - [ ] Polling overhead: The 100ms update loop in state.js runs continuously while the panel is open, consuming resources even when no changes occur.
-- [ ] Unnecessary re-renders: Manual operations (add/delete/update) trigger renderPanel(), but the update loop may immediately detect changes and update again, causing double work.
+- [X] Unnecessary re-renders: Manual operations (add/delete/update) trigger renderPanel(), but the update loop may immediately detect changes and update again, causing double work.
 - [ ] DOM queries: Frequent document.querySelector calls in storeInputReferences could be optimized with cached references.
 - [ ] Implement event-driven updates where possible (e.g., listen for SillyTavern's variable change events)
 - [X] Add throttling to the update loop or increase interval to 500ms for less critical updates
