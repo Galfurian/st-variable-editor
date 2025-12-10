@@ -1,0 +1,65 @@
+# Changelog
+
+## [v1.0.0] - 2025-12-10
+
+- (b87fd69) refactor: remove informational console.log messages, keep only error logging
+- (8e3b825) refactor: rename DEBUG_PREFIX to CONSOLE_PREFIX for better semantic naming
+- (9e98d00) refactor: add error handling to CRUD operations and rename extensionName constant
+- (b006072) docs: update README image path to images/ folder and create folder structure
+- (85a78da) refactor: remove unused loadSettings function and import
+- (872eb8a) refactor: improve readability of utils.js with extracted methods, JSDoc comments, and constants
+- (371cbb2) refactor: extract panel creation logic into helper functions for better readability
+- (31339cf) fix: always render panel when showing to ensure current chat variables are loaded
+- (349e386) fix: set delete confirmation color explicitly to red
+- (e9d68d1) feat: implement two-step delete confirmation with visual feedback
+- (68e8800) fix: only clear add row inputs if variable is successfully added
+- (329c43f) fix: use global toastr instead of SillyTavern.libs.toastr
+- (6866a52) fix: access toastr from SillyTavern.libs instead of getContext().libs
+- (efedb0f) feat: add toastr notifications for variable addition validation and success
+- (a9055e8) fix: require both name and value to be non-empty before adding variable
+- (79be7ef) fix: remove unused createVariableRow import from ui.js
+- (cf36f87) feat: make add row inputs functional - use input values if filled, prompt otherwise
+- (79d7fa5) fix: change add button from div to button element for consistency
+- (ccb0a68) feat: replace add buttons with empty rows using fa-file-circle-plus icon
+- (3f13f9d) style: update input backgrounds to use --black30a for consistency with pre elements
+- (922ca29) feat: slow down blink animation to 0.6s for better visibility
+- (a186922) feat: add blink animation for updated variable values to provide visual feedback
+- (8884c77) refactor: allow to resize the panel.
+- (c6035f9) refactor: optimize layout with flexible inputs and minimal button width
+- (8519fc7) refactor: replace delete button text with X icon for cleaner UI
+- (a251320) fix: increase panel width to 400px and optimize button sizing to prevent horizontal scrolling
+- (4ecb648) fix: remove background from variable rows for cleaner appearance
+- (117b380) fix: improve input styling with proper background and text colors, add row backgrounds for better readability
+- (624981c) refactor: implement VariableItem class for better programmatic management of variable entries, removing duplication issues
+- (d772955) fix: use vanilla JS to remove panel instead of jQuery to ensure it works
+- (1830c09) fix: prevent duplicate variable rows by only calling updateExistingInputs for value changes, renderPanel for structure changes
+- (9b05e6e) fix: change import path to '../../../../../script.js'
+- (fee21d0) fix: use global chat_metadata instead of getContext().chatMetadata for local variables to ensure real-time updates
+- (36acb17) fix: make close button set isShown to false to stop update loop, reduce update interval to 100ms for faster sync
+- (ef31059) refactor: simplify UI by removing collapse/expand, store global vars directly in extensionSettings.variables.global, add updateExistingInputs function
+- (ebd479e) refactor: use getContext() for extensionSettings and saveSettingsDebounced instead of direct imports
+- (d9b8efb) fix: uncomment imports for extension_settings and saveSettingsDebounced in modules
+- (59dedb5) fix(ui): fix close button onclick to hide panel instead of undefined togglePanel
+- (1e1d5e6) fix: define toggle logic inline in registerSlashCommand
+- (9587dca) fix: always render panel on init, toggle shows/hides instead
+- (8a3db01) fix: initialize extension settings before slash command registration
+- (4162471) fix: register slash command at top level like temp_viewer
+- (231aafc) fix: remove problematic imports from modules
+- (91662bb) fix: move togglePanel back to main index.js to avoid import issues
+- (205b946) fix: add missing imports for modular structure
+- (e28cb58) refactor: split monolithic index.js into modular structure
+- (6bbc3c3) fix: prevent 'crazy' toggle behavior on first click
+- (03f06a2) fix: preserve collapse/expand state when panel re-renders
+- (73c483b) feat: reposition close button to right of title
+- (6f592cd) fix: correct input field updates in continuous loop
+- (5a703c9) feat: implement continuous real-time variable updates
+- (7b6130f) fix: add missing chatMetadata context retrieval in renderPanel function
+- (50da535) debug: add comprehensive logging to identify why editor panel is not showing
+- (d8a26cf) feat: implement efficient variable updates like original Variable Viewer - update input values directly without re-rendering entire panel
+- (8018fcd) feat: add smart variable change detection to prevent unnecessary re-renders and preserve user input
+- (61c9619) feat: add dynamic variable loading on chat changes and message events
+- (0b773ee) fix: remove contrasting background from inline-drawer-content to eliminate light background behind variable rows
+- (d2e9f6a) feat: add collapsible sections and FontAwesome icons to match original UI
+- (24b6d02) feat: implement editable variable rows with add/delete functionality
+- (1e3271a) style: update panel styling to use theme variables
+- (bb1b2b3) feat: initial variable editor panel with basic variable display
